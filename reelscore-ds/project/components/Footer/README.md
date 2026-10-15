@@ -1,0 +1,10 @@
+# Footer
+
+The site footer: the wordmark, a few utility links, and the attribution TMDB's API terms require on every page that shows TMDB data.
+
+**Consumer provides:** optional `links` (`{label, href}`), `brand`, `homeHref`, `productType` (completes the notice, default "website"), `copyright`, `tmdbLogoSrc` (replaces the built-in TMDB logo; rarely needed).
+
+- Put it at the bottom of every page that shows TMDB data. Don't remove or reword the notice; it's the required text.
+- The TMDB logo is TMDB's official "alt short" mark, built in so it needs no network. It stays smaller than the Reelscore wordmark (14px tall); don't enlarge or recolor it.
+- Keep links to utility pages (About, Help, Privacy, Terms), five or fewer.
+- On phones, pad the page bottom for `BottomNav` as usual; the footer sits above it.

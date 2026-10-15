@@ -1,0 +1,19 @@
+{
+  "name": "reelscore",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Reelscore movie and series rating design system (React 18).",
+  "module": "dist/index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "style": "dist/reelscore.css",
+  "peerDependencies": {
+    "react": "^18",
+    "react-dom": "^18"
+  },
+  "devDependencies": {
+    "@types/react": "^18.3.31",
+    "react": "18.3.1",
+    "react-dom": "18.3.1"
+  }
+}

@@ -1,0 +1,63 @@
+<!-- @dsCard height=288 -->
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Reelscore</title>
+<style>
+  html, body { margin:0; height:100%; }
+  body { background:var(--surface-100); color:var(--ink); font-family:var(--font-sans); overflow:hidden; }
+  .cover { position:relative; height:288px; overflow:hidden; }
+  .art { position:absolute; top:0; left:480px; width:480px; height:288px; overflow:hidden; }
+  .art svg { display:block; width:480px; height:288px; }
+  .brand { fill:var(--brand); }
+  .gold { fill:var(--gold); }
+  .slate { fill:var(--surface-400); }
+  .ink { fill:var(--ink); }
+  .hole { fill:var(--surface-100); }
+  .blk { rx:var(--radius-md); }
+  .perf { rx:var(--radius-xs); }
+  .words { position:absolute; left:var(--space-6); bottom:var(--space-6); max-width:440px; }
+  .name { margin:0; font-family:var(--font-display); font-weight:400; font-size:80px; line-height:.92; letter-spacing:.02em; color:var(--ink); }
+  .tag { margin:var(--space-2) 0 0 2px; font-size:14px; line-height:20px; color:var(--ink-muted); }
+</style>
+</head>
+<body>
+<div class="cover">
+<div class="art" aria-hidden="true">
+<svg viewBox="0 0 480 288" width="480" height="288">
+<!--
+  blocks      brand 144x272 slab bled off the top (the signature red, largest) · gold 128x160 (ratings) · surface-400 176x208 bled off the right edge · one ink pill 128x32 (a selected chip) — about 35% of 960x288
+  arrangement one tall red slab with satellites, bottoms on one line space-6 above the edge, space-4 gutters
+  pattern     a literal motif, film-strip perforations, from "dark, cinematic, poster-first": 16 radius-xs holes (12x16) cut in surface-100 down both edges of the red slab at a space-6 pitch
+  scales      sides in space-4 multiples; gutters space-4; pitch space-6; corners radius-md, holes radius-xs, pill rx half its height (radius-pill)
+-->
+<rect class="brand blk" x="16" y="-16" width="144" height="272" rx="8"/>
+<rect class="hole perf" x="26" y="8" width="12" height="16" rx="3"/>
+<rect class="hole perf" x="26" y="40" width="12" height="16" rx="3"/>
+<rect class="hole perf" x="26" y="72" width="12" height="16" rx="3"/>
+<rect class="hole perf" x="26" y="104" width="12" height="16" rx="3"/>
+<rect class="hole perf" x="26" y="136" width="12" height="16" rx="3"/>
+<rect class="hole perf" x="26" y="168" width="12" height="16" rx="3"/>
+<rect class="hole perf" x="26" y="200" width="12" height="16" rx="3"/>
+<rect class="hole perf" x="26" y="232" width="12" height="16" rx="3"/>
+<rect class="hole perf" x="138" y="8" width="12" height="16" rx="3"/>
+<rect class="hole perf" x="138" y="40" width="12" height="16" rx="3"/>
+<rect class="hole perf" x="138" y="72" width="12" height="16" rx="3"/>
+<rect class="hole perf" x="138" y="104" width="12" height="16" rx="3"/>
+<rect class="hole perf" x="138" y="136" width="12" height="16" rx="3"/>
+<rect class="hole perf" x="138" y="168" width="12" height="16" rx="3"/>
+<rect class="hole perf" x="138" y="200" width="12" height="16" rx="3"/>
+<rect class="hole perf" x="138" y="232" width="12" height="16" rx="3"/>
+<rect class="ink" x="176" y="48" width="128" height="32" rx="16"/>
+<rect class="gold blk" x="176" y="96" width="128" height="160" rx="8"/>
+<rect class="slate blk" x="320" y="48" width="176" height="208" rx="8"/>
+</svg>
+</div>
+<div class="words">
+<h1 class="name">Reelscore</h1>
+<p class="tag">Rate what you watch. Dark, cinematic, poster-first.</p>
+</div>
+</div>
+</body>
+</html>

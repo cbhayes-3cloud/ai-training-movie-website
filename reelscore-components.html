@@ -1,0 +1,1130 @@
+<title>Reelscore Components</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@400;500&family=DM+Sans:ital,opsz,wght@0,9..40,300..700;1,9..40,400&display=swap">
+<style>
+/* Reelscore's own tokens and component styles (tokens.css + bundle.css from the design system) */
+/* Reelscore — generated from tokens.json */
+:root, [data-theme="dark"] {
+  --surface-0: #010103; --surface-100: #16151a; --surface-200: #1a191e; --surface-300: #292929; --surface-400: #333238;
+  --surface-glass: rgba(22, 21, 26, 0.72); --backdrop: #0d1c25; --scrim: rgba(1, 1, 3, 0.88);
+  --line: #131217; --outline: #727178; --ink: #ffffff; --ink-muted: #8b989f; --ink-faint: #5f5f64;
+  --brand: #da2026; --brand-hover: #c41a20; --brand-press: #a8161b; --brand-text: #f0484d; --on-brand: #ffffff;
+  --gold: #efa60d; --gold-deep: #de9500; --on-gold: #120d02; --focus: #ffffff;
+  --shadow-glow: 0 6px 18px rgba(218, 32, 38, 0.35); --shadow-poster: 0 10px 24px rgba(0, 0, 0, 0.55); --shadow-bar: 0 -1px 0 #131217;
+}
+:root {
+  --space-1: 4px; --space-2: 8px; --space-3: 12px; --space-4: 16px; --space-5: 24px; --space-6: 32px; --space-7: 48px; --space-8: 64px;
+  --gutter-sm: 16px; --gutter-md: 32px; --gutter-lg: 64px;
+  --radius-xs: 3px; --radius-sm: 4px; --radius-md: 8px; --radius-pill: 999px;
+  --tap-target: 44px; --nav-height: 64px; --nav-height-sm: 56px; --bottom-nav-height: 64px; --button-height: 44px; --chip-height: 36px; --poster-width-sm: 128px; --poster-width-lg: 184px;
+  --bp-sm: 480px; --bp-md: 768px; --bp-lg: 1024px; --bp-xl: 1280px;
+  --z-row-arrows: 2; --z-nav: 100; --z-overlay: 200;
+  --font-sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-display: "Bebas Neue", "Oswald", "Arial Narrow", sans-serif;
+}
+
+
+/* Reelscore components. Values come from tokens.css; layout adapts to the component's own width (container queries) so it works in any column, phone first. */
+
+body { margin: 0; background: var(--surface-100); color: var(--ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
+.rs-icon { display: block; flex: none; }
+
+:where(.rs-btn, .rs-iconbtn, .rs-chip, .rs-tab, .rs-avatar, .rs-nav__link, .rs-bottomnav__item, .rs-card__poster, .rs-rate__hit, .rs-wordmark, .rs-row__all):focus-visible {
+  outline: 2px solid var(--focus); outline-offset: 2px;
+}
+
+/* Button ------------------------------------------------------------ */
+.rs-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-2);
+  height: var(--button-height); min-width: var(--tap-target); padding: 0 var(--space-5);
+  border: 0; border-radius: var(--radius-pill); cursor: pointer; text-decoration: none;
+  font: 700 13px/16px var(--font-sans); letter-spacing: 0.04em; text-transform: uppercase; white-space: nowrap;
+  transition: background-color .15s ease, box-shadow .15s ease, transform .1s ease;
+}
+.rs-btn:active { transform: scale(.98); }
+.rs-btn--sm { height: 36px; padding: 0 var(--space-4); font-size: 12px; }
+.rs-btn--lg { height: 52px; padding: 0 var(--space-6); font-size: 14px; }
+.rs-btn--block { display: flex; width: 100%; }
+.rs-btn--primary { background: var(--brand); color: var(--on-brand); box-shadow: var(--shadow-glow); }
+.rs-btn--primary:hover { background: var(--brand-hover); }
+.rs-btn--primary:active { background: var(--brand-press); }
+.rs-btn--secondary { background: var(--surface-300); color: var(--ink); }
+.rs-btn--secondary:hover { background: var(--surface-400); }
+.rs-btn--ghost { background: none; color: var(--ink); box-shadow: inset 0 0 0 1px var(--outline); }
+.rs-btn--ghost:hover { background: var(--surface-300); }
+.rs-btn:disabled, .rs-btn[aria-disabled="true"] { background: var(--surface-300); color: var(--ink-faint); box-shadow: none; cursor: not-allowed; }
+
+/* IconButton -------------------------------------------------------- */
+.rs-iconbtn {
+  position: relative; display: inline-grid; place-items: center; flex: none;
+  width: 40px; height: 40px; padding: 0; border: 0; border-radius: var(--radius-pill);
+  background: none; color: var(--ink); cursor: pointer; transition: background-color .15s ease, color .15s ease;
+}
+.rs-iconbtn--sm { width: 28px; height: 28px; color: var(--ink-muted); }
+.rs-iconbtn--lg { width: 48px; height: 48px; }
+.rs-iconbtn:hover { background: var(--surface-300); color: var(--ink); }
+.rs-iconbtn--filled { background: var(--surface-300); }
+.rs-iconbtn--filled:hover { background: var(--surface-400); }
+.rs-iconbtn--outline { box-shadow: inset 0 0 0 1px var(--outline); }
+.rs-iconbtn--scrim { background: var(--scrim); }
+.rs-iconbtn--scrim:hover { background: var(--surface-400); }
+.rs-iconbtn.is-pressed { color: var(--brand); }
+.rs-card__watched.is-pressed { color: var(--ink); }
+.rs-iconbtn__dot { position: absolute; top: 8px; right: 9px; width: 8px; height: 8px; border-radius: 50%; background: var(--brand); box-shadow: 0 0 0 2px var(--surface-0); }
+/* small buttons keep a 44px hit area on touch screens */
+.rs-iconbtn--sm::after { content: ""; position: absolute; inset: -8px; }
+@media (pointer: coarse) { .rs-iconbtn { width: var(--tap-target); height: var(--tap-target); } .rs-iconbtn--sm { width: 32px; height: 32px; } }
+
+/* NavBar ------------------------------------------------------------ */
+.rs-nav { container-type: inline-size; background: var(--surface-0); box-shadow: 0 1px 0 var(--line); }
+.rs-nav--sticky { position: sticky; top: 0; z-index: var(--z-nav); }
+.rs-nav__inner { display: flex; align-items: center; gap: var(--space-4); height: var(--nav-height-sm); padding: 0 var(--gutter-sm); }
+.rs-wordmark { font-family: var(--font-display); font-size: 28px; line-height: 1; letter-spacing: .02em; color: var(--brand); text-decoration: none; text-transform: uppercase; padding-top: 3px; border-radius: 2px; }
+.rs-nav__links { display: none; flex: 1; justify-content: center; height: 100%; }
+.rs-nav__links ul { display: flex; gap: var(--space-2); margin: 0; padding: 0; list-style: none; height: 100%; }
+.rs-nav__link { position: relative; display: flex; align-items: center; height: 100%; padding: 0 var(--space-4); color: var(--ink-muted); text-decoration: none; font: 500 15px/20px var(--font-sans); }
+.rs-nav__link:hover { color: var(--ink); }
+.rs-nav__link.is-active { color: var(--ink); }
+.rs-nav__link.is-active::after { content: ""; position: absolute; left: var(--space-2); right: var(--space-2); bottom: 0; height: 2px; border-radius: 2px 2px 0 0; background: var(--brand); }
+.rs-nav__actions { display: flex; align-items: center; gap: var(--space-1); margin-left: auto; }
+.rs-nav__bell { display: none; }
+.rs-avatar { display: grid; place-items: center; width: 36px; height: 36px; margin-left: var(--space-2); padding: 0; border: 0; border-radius: 50%; overflow: hidden; background: var(--surface-300); color: var(--ink); cursor: pointer; font: 600 13px/1 var(--font-sans); box-shadow: 0 0 0 2px var(--surface-400); }
+.rs-avatar img { width: 100%; height: 100%; object-fit: cover; }
+@container (min-width: 768px) {
+  .rs-nav__inner { height: var(--nav-height); padding: 0 var(--gutter-md); gap: var(--space-6); }
+  .rs-wordmark { font-size: 34px; }
+  .rs-nav__links { display: flex; }
+  .rs-nav__actions { margin-left: 0; }
+  .rs-nav__bell { display: inline-grid; }
+}
+@container (min-width: 1280px) { .rs-nav__inner { padding: 0 var(--gutter-lg); } }
+
+/* BottomNav (phones) ------------------------------------------------ */
+.rs-bottomnav { background: var(--surface-0); box-shadow: var(--shadow-bar); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.rs-bottomnav--fixed { position: fixed; left: 0; right: 0; bottom: 0; z-index: var(--z-nav); }
+.rs-bottomnav ul { display: grid; grid-auto-flow: column; grid-auto-columns: 1fr; margin: 0; padding: 0; list-style: none; height: var(--bottom-nav-height); }
+.rs-bottomnav__item { display: flex; flex-direction: column; align-items: center; justify-content: center; gap: var(--space-1); height: 100%; color: var(--ink-muted); text-decoration: none; font: 500 11px/14px var(--font-sans); position: relative; }
+.rs-bottomnav__item.is-active { color: var(--ink); }
+.rs-bottomnav__item.is-active::before { content: ""; position: absolute; top: 0; left: 30%; right: 30%; height: 2px; border-radius: 0 0 2px 2px; background: var(--brand); }
+@media (min-width: 768px) { .rs-bottomnav--auto { display: none; } }
+
+/* Tabs -------------------------------------------------------------- */
+.rs-tabs { container-type: inline-size; background: var(--surface-100); box-shadow: inset 0 -1px 0 var(--line); }
+.rs-tabs--overlay { background: var(--surface-glass); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
+.rs-tabs__list { display: flex; gap: var(--space-5); overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; padding: 0 var(--gutter-sm); }
+.rs-tabs__list::-webkit-scrollbar { display: none; }
+.rs-tab { position: relative; flex: none; scroll-snap-align: start; height: 52px; padding: 0 2px; border: 0; background: none; cursor: pointer; color: var(--ink-muted); font: 500 15px/20px var(--font-sans); white-space: nowrap; }
+.rs-tab:hover { color: var(--ink); }
+.rs-tab.is-active { color: var(--ink); }
+.rs-tab.is-active::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; border-radius: 2px 2px 0 0; background: var(--brand); }
+@container (min-width: 768px) {
+  .rs-tabs__list { justify-content: space-between; gap: var(--space-6); padding: 0 var(--gutter-md); }
+  .rs-tab { height: 60px; }
+}
+@container (min-width: 1280px) { .rs-tabs__list { padding: 0 var(--gutter-lg); } }
+
+/* GenreChips -------------------------------------------------------- */
+.rs-chips { container-type: inline-size; background: var(--surface-200); }
+.rs-chips__list { display: flex; gap: var(--space-3); overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; padding: var(--space-4) var(--gutter-sm); }
+.rs-chips__list::-webkit-scrollbar { display: none; }
+.rs-chip { flex: none; scroll-snap-align: start; display: inline-flex; align-items: center; gap: 6px; height: var(--chip-height); min-width: 88px; justify-content: center; padding: 0 var(--space-4); border: 0; border-radius: var(--radius-pill); background: var(--surface-300); color: var(--ink); cursor: pointer; font: 500 13px/16px var(--font-sans); transition: background-color .15s ease; }
+.rs-chip:hover { background: var(--surface-400); }
+.rs-chip.is-selected { background: var(--brand); color: var(--on-brand); box-shadow: var(--shadow-glow); }
+.rs-chip.is-selected:hover { background: var(--brand-hover); }
+@media (pointer: coarse) { .rs-chip { height: 40px; } }
+/* chips share the page gutters, so the first chip lines up with the first tab and row title */
+@container (min-width: 768px) { .rs-chips__list { padding-inline: var(--gutter-md); scroll-padding-inline: var(--gutter-md); } }
+@container (min-width: 1024px) { .rs-chips__list { flex-wrap: wrap; overflow: visible; } }
+@container (min-width: 1280px) { .rs-chips__list { padding-inline: var(--gutter-lg); } }
+
+/* AgeBadge ---------------------------------------------------------- */
+.rs-age { display: inline-flex; align-items: center; height: 18px; padding: 0 6px; border-radius: var(--radius-xs); background: var(--gold-deep); color: var(--on-gold); font: 700 11px/14px var(--font-sans); letter-spacing: .02em; }
+
+/* RatingBadge ------------------------------------------------------- */
+.rs-score { display: inline-flex; align-items: center; gap: var(--space-1); font: 600 13px/16px var(--font-sans); font-variant-numeric: tabular-nums; color: var(--ink); }
+.rs-score--gold .rs-icon { color: var(--gold); }
+.rs-score--gold { color: var(--gold); }
+.rs-score--brand .rs-icon { color: var(--brand); }
+.rs-score--md { font-size: 16px; line-height: 20px; gap: 6px; }
+.rs-score__votes { font-weight: 400; color: var(--ink-muted); }
+
+/* RatingInput ------------------------------------------------------- */
+.rs-rate { display: inline-flex; align-items: center; gap: var(--space-4); flex-wrap: wrap; }
+.rs-rate__stars { display: inline-flex; gap: var(--space-1); }
+.rs-rate__star { position: relative; width: 28px; height: 28px; }
+.rs-rate__base { color: var(--surface-400); stroke: var(--outline); stroke-width: 1.2; }
+.rs-rate__fill { position: absolute; inset: 0 auto 0 0; overflow: hidden; color: var(--gold); pointer-events: none; transition: width .1s ease; }
+.rs-rate__hit { position: absolute; top: -6px; bottom: -6px; width: 50%; padding: 0; border: 0; background: none; cursor: pointer; border-radius: 4px; }
+.rs-rate__hit--l { left: 0; }
+.rs-rate__hit--r { right: 0; }
+.rs-rate__readout { font: 600 15px/20px var(--font-sans); font-variant-numeric: tabular-nums; color: var(--ink-muted); min-width: 64px; }
+@media (pointer: coarse) { .rs-rate__star { width: 40px; height: 40px; } .rs-rate__star .rs-icon { width: 40px; height: 40px; } }
+
+/* MovieCard --------------------------------------------------------- */
+.rs-card { width: var(--poster-width-sm); min-width: 0; }
+.rs-card__poster { display: block; color: inherit; text-decoration: none; aspect-ratio: 2 / 3; border-radius: var(--radius-sm); overflow: hidden; background: var(--backdrop); transition: transform .2s ease, box-shadow .2s ease; }
+.rs-card__poster:hover, .rs-card__poster:focus-visible { transform: translateY(-4px); box-shadow: var(--shadow-poster); }
+.rs-poster__img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.rs-poster__fallback { display: grid; place-items: center; width: 100%; height: 100%; font: 400 72px/1 var(--font-display); color: var(--ink); }
+.rs-poster__fallback--night { background: var(--backdrop); }
+.rs-poster__fallback--red { background: var(--brand-press); }
+.rs-poster__fallback--gold { background: var(--gold-deep); color: var(--on-gold); }
+.rs-poster__fallback--slate { background: var(--surface-400); }
+.rs-card__title { margin: var(--space-3) 0 2px; font: 500 15px/20px var(--font-sans); color: var(--ink); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rs-card__meta { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0 var(--space-2); min-height: 28px; }
+.rs-card__year { flex: none; font: 400 12px/16px var(--font-sans); color: var(--ink-muted); white-space: nowrap; }
+.rs-card__actions { display: flex; align-items: center; gap: 0; flex: none; margin-left: auto; }
+.rs-card__actions .rs-score { margin-left: var(--space-1); }
+@media (min-width: 768px) { .rs-card { width: var(--poster-width-lg); } }
+.rs-row .rs-card { width: var(--poster-width-sm); }
+@container (min-width: 768px) { .rs-row .rs-card { width: var(--poster-width-lg); } }
+
+/* PosterRow --------------------------------------------------------- */
+.rs-row { container-type: inline-size; padding: var(--space-5) 0; }
+.rs-row__head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-4); padding: 0 var(--gutter-sm) var(--space-3); }
+.rs-row__title { margin: 0; font: 600 20px/28px var(--font-sans); color: var(--ink); }
+.rs-row__all { color: var(--brand-text); font: 500 13px/16px var(--font-sans); text-decoration: none; white-space: nowrap; }
+.rs-row__all:hover { text-decoration: underline; }
+.rs-row__frame { position: relative; }
+.rs-row__track { display: flex; gap: var(--space-3); margin: 0; padding: var(--space-2) var(--gutter-sm) var(--space-3); list-style: none; overflow-x: auto; scroll-snap-type: x mandatory; scroll-padding-inline: var(--gutter-sm); scrollbar-width: none; overscroll-behavior-x: contain; }
+.rs-row__track::-webkit-scrollbar { display: none; }
+.rs-row__item { flex: none; scroll-snap-align: start; }
+.rs-row__arrow { position: absolute; top: 38%; transform: translateY(-50%); z-index: var(--z-row-arrows); display: none; }
+.rs-row__arrow--l { left: var(--space-2); }
+.rs-row__arrow--r { right: var(--space-2); }
+@container (min-width: 768px) {
+  .rs-row__head { padding: 0 var(--gutter-md) var(--space-4); }
+  .rs-row__track { gap: var(--space-4); padding-inline: var(--gutter-md); scroll-padding-inline: var(--gutter-md); }
+}
+@container (min-width: 1024px) {
+  .rs-row__frame:hover .rs-row__arrow, .rs-row__arrow:focus-visible { display: inline-grid; }
+}
+@container (min-width: 1280px) {
+  .rs-row__head { padding: 0 var(--gutter-lg) var(--space-4); }
+  .rs-row__track { padding-inline: var(--gutter-lg); scroll-padding-inline: var(--gutter-lg); }
+}
+@media (hover: none) { .rs-row__arrow { display: none !important; } }
+
+/* Hero -------------------------------------------------------------- */
+.rs-hero { container-type: inline-size; position: relative; background: var(--surface-0); overflow: hidden; }
+.rs-hero__art { position: relative; aspect-ratio: 4 / 3; background: var(--backdrop); }
+.rs-hero__art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.rs-hero__art::after { content: ""; position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(1, 1, 3, 0) 45%, var(--surface-0) 100%); }
+.rs-hero__body { position: relative; display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-3); margin-top: -64px; padding: 0 var(--gutter-sm) var(--space-6); }
+.rs-hero__meta { display: flex; align-items: center; flex-wrap: wrap; gap: var(--space-2) var(--space-5); font: 400 15px/20px var(--font-sans); color: var(--ink); }
+.rs-hero__meta > * + *::before { content: "•"; margin-right: var(--space-5); color: var(--ink-muted); font-size: 10px; vertical-align: 2px; }
+.rs-hero__meta > * + * { display: inline-flex; align-items: center; }
+.rs-hero__title { margin: var(--space-1) 0 0; font: 300 22px/30px var(--font-sans); letter-spacing: .32em; text-transform: uppercase; color: var(--ink); }
+.rs-hero__synopsis { margin: 0; max-width: 52ch; font: 400 16px/24px var(--font-sans); color: var(--ink); }
+.rs-hero__actions { display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-3); width: 100%; margin-top: var(--space-3); }
+.rs-hero__foot { position: relative; }
+@container (max-width: 359px) { .rs-hero__actions { grid-template-columns: 1fr; } }
+@container (min-width: 480px) { .rs-hero__actions { display: flex; width: auto; } }
+@container (min-width: 768px) {
+  .rs-hero__art { position: absolute; inset: 0; aspect-ratio: auto; }
+  .rs-hero__art::after { background: linear-gradient(to right, var(--scrim) 0%, rgba(1, 1, 3, .6) 40%, rgba(1, 1, 3, 0) 70%), linear-gradient(to bottom, rgba(1, 1, 3, 0) 60%, var(--surface-0) 100%); }
+  .rs-hero__body { min-height: 520px; box-sizing: border-box; justify-content: center; gap: var(--space-4); margin: 0; padding: var(--space-8) var(--gutter-md); max-width: 620px; }
+  .rs-hero__title { font-size: 32px; line-height: 40px; letter-spacing: .5em; }
+  .rs-hero__synopsis { font-size: 17px; line-height: 26px; }
+}
+@container (min-width: 1280px) { .rs-hero__body { min-height: 600px; padding-inline: var(--gutter-lg); max-width: 700px; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .rs-btn, .rs-card__poster, .rs-rate__fill, .rs-chip, .rs-iconbtn { transition: none; }
+  .rs-card__poster:hover { transform: none; }
+}
+
+</style>
+<style>
+/* Layout: sticky chrome-black index on the left, page-dark reference column on the right; collapses to a scrolling index strip on phones.
+   Single dark look on purpose: Reelscore has one theme. Page-only additions below; everything else is a Reelscore token. */
+:root {
+  color-scheme: dark;
+  --doc-mono: "DM Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --doc-rule: #232228;      /* hairline between rows, a step above --line so it reads on surface-100 */
+  --doc-code-bg: #0b0b0e;   /* code blocks sit between surface-0 and surface-100 */
+  --doc-sidebar: 248px;
+}
+html { scroll-behavior: smooth; scroll-padding-top: 24px; }
+@media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+body { background: var(--surface-100); color: var(--ink); font: 400 15px/22px var(--font-sans); }
+
+.doc { display: grid; grid-template-columns: var(--doc-sidebar) minmax(0, 1fr); min-height: 100vh; }
+
+/* Index ----------------------------------------------------------- */
+.idx { position: sticky; top: env(safe-area-inset-top, 0px); align-self: start; height: 100vh; overflow-y: auto; background: var(--surface-0); box-shadow: 1px 0 0 var(--line); padding-block: 28px; padding-inline: 24px; box-sizing: border-box; display: flex; flex-direction: column; gap: 28px; }
+.idx__brand { display: flex; flex-direction: column; gap: 2px; }
+.idx__mark { font: 400 34px/34px var(--font-display); letter-spacing: .02em; color: var(--brand); text-transform: uppercase; }
+.idx__sub { font: 500 12px/16px var(--font-sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
+.idx__group { display: flex; flex-direction: column; gap: 2px; }
+.idx__label { font: 500 11px/16px var(--font-sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-faint); margin: 0 0 6px; }
+.idx a { display: flex; justify-content: space-between; align-items: center; padding: 6px 10px; margin-inline: -10px; border-radius: var(--radius-md); color: var(--ink-muted); text-decoration: none; font: 500 15px/20px var(--font-sans); transition: color .15s ease, background-color .15s ease; }
+.idx a:hover { color: var(--ink); background: var(--surface-200); }
+.idx a.is-current { color: var(--ink); background: var(--surface-200); box-shadow: inset 2px 0 0 var(--brand); }
+.idx a:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.idx__count { font: 400 12px/16px var(--doc-mono); color: var(--ink-faint); }
+
+/* Main column ----------------------------------------------------- */
+.main { min-width: 0; padding-block: 48px 96px; padding-inline: clamp(16px, 5vw, 64px); display: flex; flex-direction: column; gap: 72px; }
+.intro { max-width: 68ch; display: flex; flex-direction: column; gap: 16px; }
+.intro h1 { margin: 0; font: 300 32px/40px var(--font-sans); letter-spacing: .5em; text-transform: uppercase; text-wrap: balance; }
+.intro p { margin: 0; color: var(--ink-muted); font-size: 17px; line-height: 26px; }
+.intro code, .comp p code, .rules code, .props code { font: 400 0.9em/1 var(--doc-mono); color: var(--ink); background: var(--surface-300); padding: 2px 5px; border-radius: 3px; }
+.facts { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 4px 0 0; padding: 0; list-style: none; font: 400 13px/18px var(--font-sans); color: var(--ink-muted); }
+.facts strong { color: var(--ink); font-weight: 600; font-variant-numeric: tabular-nums; }
+
+/* Component section ---------------------------------------------- */
+.comp { display: flex; flex-direction: column; gap: 24px; scroll-margin-top: 24px; }
+.comp + .comp { padding-top: 72px; box-shadow: 0 -1px 0 var(--doc-rule); }
+.comp__head { display: flex; flex-direction: column; gap: 8px; max-width: 72ch; }
+.comp__eyebrow { margin: 0; font: 500 12px/16px var(--font-sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
+.comp__name { margin: 0; font: 600 28px/36px var(--font-sans); letter-spacing: -.01em; }
+.comp__name a { color: inherit; text-decoration: none; }
+.comp__name a:hover::after { content: " #"; color: var(--ink-faint); }
+.comp__sum { margin: 0; font-size: 17px; line-height: 26px; color: var(--ink); }
+
+/* Preview stage */
+.stage { border-radius: var(--radius-md); background: var(--surface-0); box-shadow: 0 0 0 1px var(--doc-rule); overflow: hidden; }
+.stage__bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; padding: 10px 14px; background: var(--surface-200); box-shadow: inset 0 -1px 0 var(--line); }
+.stage__title { font: 500 12px/16px var(--font-sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); }
+.seg { display: inline-flex; gap: 2px; padding: 2px; border-radius: var(--radius-pill); background: var(--surface-300); }
+.seg button { border: 0; background: none; color: var(--ink-muted); font: 500 12px/16px var(--font-sans); padding: 5px 12px; border-radius: var(--radius-pill); cursor: pointer; }
+.seg button[aria-pressed="true"] { background: var(--surface-400); color: var(--ink); }
+.seg button:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+.stage__canvas { padding: 24px; overflow-x: auto; }
+.stage__canvas--flush { padding: 0; }
+.stage__frame { width: 100%; margin-inline: auto; transition: width .2s ease; }
+.stage[data-width="phone"] .stage__frame { width: 375px; max-width: 100%; box-shadow: 0 0 0 1px var(--surface-400); border-radius: 12px; overflow: hidden; margin-block: 24px; }
+@media (prefers-reduced-motion: reduce) { .stage__frame { transition: none; } }
+.ex { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.ex--col { flex-direction: column; align-items: flex-start; gap: 20px; }
+.ex__cap { font: 400 12px/16px var(--font-sans); color: var(--ink-muted); }
+
+/* Usage code */
+.code { position: relative; border-radius: var(--radius-md); background: var(--doc-code-bg); box-shadow: 0 0 0 1px var(--doc-rule); }
+.code pre { margin: 0; padding: 18px 20px; overflow-x: auto; font: 400 13px/21px var(--doc-mono); color: #d7d6dc; tab-size: 2; }
+.code .t-tag { color: var(--brand-text); }
+.code .t-attr { color: var(--ink-muted); }
+.code .t-str { color: var(--gold); }
+.code .t-com { color: var(--ink-faint); }
+.copy { position: absolute; top: 10px; right: 10px; border: 0; border-radius: var(--radius-pill); background: var(--surface-300); color: var(--ink); font: 500 12px/16px var(--font-sans); padding: 6px 12px; cursor: pointer; }
+.copy:hover { background: var(--surface-400); }
+.copy:focus-visible { outline: 2px solid var(--focus); outline-offset: 2px; }
+
+/* Props table */
+.sub { margin: 0; font: 600 20px/28px var(--font-sans); }
+.props-wrap { overflow-x: auto; border-radius: var(--radius-md); box-shadow: 0 0 0 1px var(--doc-rule); }
+.props { width: 100%; min-width: 640px; border-collapse: collapse; font-size: 14px; line-height: 20px; }
+.props th { text-align: left; font: 500 11px/16px var(--font-sans); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-muted); background: var(--surface-200); padding: 10px 16px; }
+.props td { padding: 14px 16px; vertical-align: top; box-shadow: inset 0 1px 0 var(--doc-rule); }
+.props td:first-child { white-space: nowrap; }
+.p-name { font: 500 14px/20px var(--doc-mono); color: var(--ink); }
+.p-req { display: inline-block; margin-left: 8px; font: 600 10px/14px var(--font-sans); letter-spacing: .06em; text-transform: uppercase; color: var(--brand-text); vertical-align: 1px; }
+.p-type { font: 400 13px/20px var(--doc-mono); color: var(--ink-muted); }
+.p-type .lit { color: var(--gold); }
+.p-def { font: 400 13px/20px var(--doc-mono); color: var(--ink); white-space: nowrap; }
+.p-none { color: var(--ink-faint); }
+.p-desc { color: var(--ink); max-width: 56ch; }
+.p-desc p { margin: 0; }
+.p-shape { margin-top: 6px; font: 400 12px/18px var(--doc-mono); color: var(--ink-muted); }
+.props-note { margin: -12px 0 0; font-size: 13px; color: var(--ink-muted); }
+
+/* Guidelines */
+.rules { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; max-width: 72ch; }
+.rules li { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 10px; color: var(--ink); }
+.rules li::before { content: ""; width: 6px; height: 6px; margin: 8px 0 0 4px; border-radius: 50%; background: var(--brand); }
+
+.icon-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(96px, 1fr)); gap: 4px; width: 100%; }
+.icon-cell { display: flex; flex-direction: column; align-items: center; gap: 8px; padding: 14px 6px; border-radius: var(--radius-md); color: var(--ink); }
+.icon-cell:hover { background: var(--surface-200); }
+.icon-cell span { font: 400 12px/16px var(--doc-mono); color: var(--ink-muted); }
+
+/* Phone ------------------------------------------------------------ */
+@media (max-width: 900px) {
+  .doc { grid-template-columns: minmax(0, 1fr); }
+  .idx { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 10; height: auto; flex-direction: row; align-items: center; gap: 16px; padding-block: 10px; padding-inline: 16px; overflow-x: auto; overflow-y: hidden; scrollbar-width: none; box-shadow: 0 1px 0 var(--line); }
+  .idx::-webkit-scrollbar { display: none; }
+  .idx__brand { flex: none; }
+  .idx__mark { font-size: 26px; line-height: 26px; }
+  .idx__sub { display: none; }
+  .idx__group { flex-direction: row; flex: none; gap: 4px; }
+  .idx__label { display: none; }
+  .idx a { margin: 0; padding: 6px 12px; white-space: nowrap; background: var(--surface-200); border-radius: var(--radius-pill); }
+  .idx a.is-current { box-shadow: none; background: var(--brand); color: var(--on-brand); }
+  .idx__count { display: none; }
+  html { scroll-padding-top: 72px; }
+  .comp { scroll-margin-top: 72px; }
+  .main { padding-block: 32px 64px; gap: 56px; }
+  .comp + .comp { padding-top: 56px; }
+  .intro h1 { font-size: 22px; line-height: 30px; letter-spacing: .32em; }
+  .stage__canvas { padding: 16px; }
+}
+</style>
+
+<div class="doc">
+  <nav class="idx" id="idx" aria-label="Components"></nav>
+  <main class="main" id="main">
+    <header class="intro">
+      <h1>Reelscore</h1>
+      <p>Every component in the Reelscore design system, rendered live from the shipped bundle, with the props each one accepts. Components read from <code>window.Reelscore</code> and need React 18.</p>
+      <ul class="facts" id="facts"></ul>
+    </header>
+  </main>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script>
+/* Reelscore component bundle, unchanged from the design system */
+/* @ds-bundle: {"format":4,"namespace":"Reelscore","components":[{"name":"Icon"},{"name":"Button"},{"name":"IconButton"},{"name":"NavBar"},{"name":"BottomNav"},{"name":"Tabs"},{"name":"GenreChips"},{"name":"AgeBadge"},{"name":"RatingBadge"},{"name":"RatingInput"},{"name":"MovieCard"},{"name":"PosterRow"},{"name":"Hero"}]} */
+(function () {
+  var React = window.React;
+  var h = React.createElement;
+
+  function cx() {
+    return Array.prototype.filter.call(arguments, Boolean).join(' ');
+  }
+  function omit(obj, keys) {
+    var out = {};
+    for (var k in obj) if (Object.prototype.hasOwnProperty.call(obj, k) && keys.indexOf(k) < 0) out[k] = obj[k];
+    return out;
+  }
+
+  /* 24x24 glyphs, drawn for this system, filled with currentColor (evenodd). */
+  var PATHS = {
+    star: 'M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3l-5.9 3.3 1.3-6.6L2.5 9.4l6.6-.8z',
+    heart: 'M12 20.5l-1.2-1.1C6 15.1 3 12.3 3 8.9 3 6.1 5.1 4 7.8 4c1.6 0 3.1.7 4.2 1.9C13.1 4.7 14.6 4 16.2 4 18.9 4 21 6.1 21 8.9c0 3.4-3 6.2-7.8 10.5z',
+    eye: 'M12 5C6.5 5 2.7 9.2 1.5 12c1.2 2.8 5 7 10.5 7s9.3-4.2 10.5-7C21.3 9.2 17.5 5 12 5zm0 3a4 4 0 100 8 4 4 0 000-8zm0 2.2a1.8 1.8 0 110 3.6 1.8 1.8 0 010-3.6z',
+    play: 'M7 4.5v15l12.5-7.5z',
+    plus: 'M12 2a10 10 0 110 20 10 10 0 010-20zm0 2a8 8 0 100 16 8 8 0 000-16zm-1 3.5h2V11h3.5v2H13v3.5h-2V13H7.5v-2H11z',
+    search: 'M10.5 3a7.5 7.5 0 015.96 12.05l4.25 4.24-1.42 1.42-4.24-4.25A7.5 7.5 0 1110.5 3zm0 2a5.5 5.5 0 100 11 5.5 5.5 0 000-11z',
+    bell: 'M12 2.5A1.5 1.5 0 0113.5 4v.7A6 6 0 0118 10.5V15l2 2.5v1H4v-1L6 15v-4.5a6 6 0 014.5-5.8V4A1.5 1.5 0 0112 2.5zM9.5 19.5h5a2.5 2.5 0 01-5 0z',
+    chevronLeft: 'M15.4 4.6L16.8 6l-6 6 6 6-1.4 1.4L8 12z',
+    chevronRight: 'M8.6 4.6L7.2 6l6 6-6 6 1.4 1.4L16 12z',
+    home: 'M12 3l9 7.5V21h-6v-6H9v6H3V10.5z',
+    film: 'M4 3h16v18H4zm2 2v2h2V5zm10 0v2h2V5zM6 9v2h2V9zm10 0v2h2V9zM6 13v2h2v-2zm10 0v2h2v-2zM6 17v2h2v-2zm10 0v2h2v-2zM10 5v14h4V5z',
+    tv: 'M3 5h18v12H3zm2 2v8h14V7zM8 19h8v2H8z',
+    list: 'M4 6h16v2H4zm0 5h16v2H4zm0 5h10v2H4z',
+    check: 'M9.5 16.2L5.3 12l-1.4 1.4 5.6 5.6L20.1 8.4 18.7 7z',
+    user: 'M12 3a4.5 4.5 0 110 9 4.5 4.5 0 010-9zm0 11c4.4 0 8 2.2 8 5v2H4v-2c0-2.8 3.6-5 8-5z'
+  };
+
+  function Icon(props) {
+    var size = props.size || 20;
+    var d = PATHS[props.name] || PATHS.star;
+    var a11y = props.title ? { role: 'img', 'aria-label': props.title } : { 'aria-hidden': 'true', focusable: 'false' };
+    return h('svg', Object.assign({
+      className: cx('rs-icon', props.className),
+      width: size, height: size, viewBox: '0 0 24 24', fill: 'currentColor'
+    }, a11y), h('path', { d: d, fillRule: 'evenodd', clipRule: 'evenodd' }));
+  }
+  Icon.names = Object.keys(PATHS);
+
+  function Button(props) {
+    var variant = props.variant || 'primary';
+    var size = props.size || 'md';
+    var rest = omit(props, ['variant', 'size', 'icon', 'fullWidth', 'className', 'children', 'href']);
+    var inner = [
+      props.icon ? h(Icon, { key: 'i', name: props.icon, size: size === 'sm' ? 16 : 18 }) : null,
+      h('span', { key: 'l' }, props.children)
+    ];
+    var cls = cx('rs-btn', 'rs-btn--' + variant, 'rs-btn--' + size, props.fullWidth && 'rs-btn--block', props.className);
+    if (props.href) return h('a', Object.assign({ href: props.href, className: cls }, rest), inner);
+    return h('button', Object.assign({ type: 'button', className: cls }, rest), inner);
+  }
+
+  function IconButton(props) {
+    var variant = props.variant || 'ghost';
+    var size = props.size || 'md';
+    var rest = omit(props, ['icon', 'label', 'variant', 'size', 'pressed', 'className', 'badge']);
+    var extra = {};
+    if (props.pressed !== undefined) extra['aria-pressed'] = props.pressed ? 'true' : 'false';
+    return h('button', Object.assign({
+      type: 'button',
+      className: cx('rs-iconbtn', 'rs-iconbtn--' + variant, 'rs-iconbtn--' + size, props.pressed && 'is-pressed', props.className),
+      'aria-label': props.label,
+      title: props.label
+    }, extra, rest),
+      h(Icon, { name: props.icon, size: size === 'sm' ? 16 : size === 'lg' ? 24 : 20 }),
+      props.badge ? h('span', { className: 'rs-iconbtn__dot', 'aria-hidden': 'true' }) : null
+    );
+  }
+
+  function Wordmark(props) {
+    return h('a', { className: 'rs-wordmark', href: props.href || '/', 'aria-label': (props.brand || 'Reelscore') + ' home' }, props.brand || 'Reelscore');
+  }
+
+  function NavBar(props) {
+    var links = props.links || [];
+    return h('header', { className: cx('rs-nav', props.sticky && 'rs-nav--sticky', props.className) },
+      h('div', { className: 'rs-nav__inner' },
+        h(Wordmark, { brand: props.brand, href: props.homeHref }),
+        h('nav', { className: 'rs-nav__links', 'aria-label': 'Primary' },
+          h('ul', null, links.map(function (l) {
+            return h('li', { key: l.label },
+              h('a', { href: l.href || '#', className: cx('rs-nav__link', l.active && 'is-active'), 'aria-current': l.active ? 'page' : undefined }, l.label));
+          }))
+        ),
+        h('div', { className: 'rs-nav__actions' },
+          h(IconButton, { icon: 'search', label: 'Search', onClick: props.onSearch }),
+          h(IconButton, { icon: 'bell', label: props.notifications ? 'Notifications, ' + props.notifications + ' new' : 'Notifications', badge: !!props.notifications, onClick: props.onNotifications, className: 'rs-nav__bell' }),
+          h('button', { type: 'button', className: 'rs-avatar', 'aria-label': props.avatarLabel || 'Account', onClick: props.onAccount },
+            props.avatarSrc ? h('img', { src: props.avatarSrc, alt: '' }) : h('span', { 'aria-hidden': 'true' }, props.initials || h(Icon, { name: 'user', size: 18 })))
+        )
+      )
+    );
+  }
+
+  function BottomNav(props) {
+    var items = props.items || [];
+    var hide = props.hideOnDesktop !== false;
+    var fixed = props.fixed !== false;
+    return h('nav', { className: cx('rs-bottomnav', hide && 'rs-bottomnav--auto', fixed && 'rs-bottomnav--fixed', props.className), 'aria-label': props.label || 'Primary' },
+      h('ul', null, items.map(function (it) {
+        return h('li', { key: it.label },
+          h('a', { href: it.href || '#', className: cx('rs-bottomnav__item', it.active && 'is-active'), 'aria-current': it.active ? 'page' : undefined },
+            h(Icon, { name: it.icon || 'home', size: 22 }),
+            h('span', null, it.label)));
+      }))
+    );
+  }
+
+  function Tabs(props) {
+    var items = props.items || [];
+    var st = React.useState(props.defaultValue || (items[0] && items[0].id));
+    var value = props.value !== undefined ? props.value : st[0];
+    var refs = React.useRef([]);
+    function select(id, i) {
+      if (props.value === undefined) st[1](id);
+      if (props.onChange) props.onChange(id);
+      if (refs.current[i]) refs.current[i].focus();
+    }
+    function onKey(e, i) {
+      var n = items.length, j = -1;
+      if (e.key === 'ArrowRight') j = (i + 1) % n;
+      else if (e.key === 'ArrowLeft') j = (i - 1 + n) % n;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = n - 1;
+      if (j >= 0) { e.preventDefault(); select(items[j].id, j); }
+    }
+    return h('div', { className: cx('rs-tabs', props.overlay && 'rs-tabs--overlay', props.className) },
+      h('div', { className: 'rs-tabs__list', role: 'tablist', 'aria-label': props.label || 'Sections' },
+        items.map(function (t, i) {
+          var on = t.id === value;
+          return h('button', {
+            key: t.id, type: 'button', role: 'tab', id: 'tab-' + t.id,
+            'aria-selected': on ? 'true' : 'false', 'aria-controls': t.panelId,
+            tabIndex: on ? 0 : -1, className: cx('rs-tab', on && 'is-active'),
+            ref: function (el) { refs.current[i] = el; },
+            onClick: function () { select(t.id, i); },
+            onKeyDown: function (e) { onKey(e, i); }
+          }, t.label);
+        })
+      )
+    );
+  }
+
+  function GenreChips(props) {
+    var genres = props.genres || [];
+    var st = React.useState(props.defaultSelected || []);
+    var selected = props.selected !== undefined ? props.selected : st[0];
+    function toggle(g) {
+      var next = selected.indexOf(g) >= 0 ? selected.filter(function (x) { return x !== g; }) : selected.concat([g]);
+      if (props.selected === undefined) st[1](next);
+      if (props.onChange) props.onChange(next);
+    }
+    return h('div', { className: cx('rs-chips', props.className) },
+      h('div', { className: 'rs-chips__list', role: 'group', 'aria-label': props.label || 'Filter by genre' },
+        genres.map(function (g) {
+          var on = selected.indexOf(g) >= 0;
+          return h('button', { key: g, type: 'button', className: cx('rs-chip', on && 'is-selected'), 'aria-pressed': on ? 'true' : 'false', onClick: function () { toggle(g); } },
+            on ? h(Icon, { name: 'check', size: 14 }) : null, h('span', null, g));
+        })
+      )
+    );
+  }
+
+  function AgeBadge(props) {
+    return h('span', { className: cx('rs-age', props.className), 'aria-label': 'Rated ' + props.rating }, props.rating);
+  }
+
+  function RatingBadge(props) {
+    var max = props.max || 10;
+    var v = Number(props.value);
+    var tone = props.tone || 'gold';
+    return h('span', { className: cx('rs-score', 'rs-score--' + tone, 'rs-score--' + (props.size || 'sm'), props.className), 'aria-label': 'Rated ' + v.toFixed(1) + ' out of ' + max + (props.votes ? ', ' + props.votes + ' ratings' : '') },
+      h(Icon, { name: 'star', size: props.size === 'md' ? 16 : 13 }),
+      h('span', { 'aria-hidden': 'true' }, v.toFixed(1)),
+      props.votes ? h('span', { className: 'rs-score__votes', 'aria-hidden': 'true' }, '(' + props.votes + ')') : null
+    );
+  }
+
+  /* value: 0–10, in whole points; each star is two points (a half star = 1). */
+  function RatingInput(props) {
+    var st = React.useState(props.defaultValue || 0);
+    var value = props.value !== undefined ? props.value : st[0];
+    var hv = React.useState(0);
+    var shown = hv[0] || value;
+    var refs = React.useRef([]);
+    function set(n) {
+      n = Math.max(1, Math.min(10, n));
+      if (props.value === undefined) st[1](n);
+      if (props.onChange) props.onChange(n);
+      if (refs.current[n - 1]) refs.current[n - 1].focus();
+    }
+    function onKey(e) {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowUp') { e.preventDefault(); set((value || 0) + 1); }
+      else if (e.key === 'ArrowLeft' || e.key === 'ArrowDown') { e.preventDefault(); set((value || 2) - 1); }
+      else if (e.key === 'Home') { e.preventDefault(); set(1); }
+      else if (e.key === 'End') { e.preventDefault(); set(10); }
+    }
+    var stars = [];
+    for (var i = 1; i <= 5; i++) {
+      var fill = shown >= i * 2 ? '100%' : shown === i * 2 - 1 ? '50%' : '0%';
+      var halves = [i * 2 - 1, i * 2].map(function (n, k) {
+        var focusable = value ? n === value : n === 1;
+        return h('button', {
+          key: k, type: 'button', role: 'radio',
+          className: 'rs-rate__hit rs-rate__hit--' + (k ? 'r' : 'l'),
+          'aria-checked': n === value ? 'true' : 'false',
+          'aria-label': (n / 2) + (n === 2 ? ' star' : ' stars'),
+          tabIndex: focusable ? 0 : -1,
+          ref: function (el) { refs.current[n - 1] = el; },
+          onClick: function () { set(n); },
+          onMouseEnter: function () { hv[1](n); },
+          onKeyDown: onKey
+        });
+      });
+      stars.push(h('span', { key: i, className: 'rs-rate__star' },
+        h(Icon, { name: 'star', size: 28, className: 'rs-rate__base' }),
+        h('span', { className: 'rs-rate__fill', style: { width: fill } }, h(Icon, { name: 'star', size: 28 })),
+        halves));
+    }
+    return h('div', { className: cx('rs-rate', props.className) },
+      h('div', { className: 'rs-rate__stars', role: 'radiogroup', 'aria-label': props.label || 'Your rating', onMouseLeave: function () { hv[1](0); } }, stars),
+      h('span', { className: 'rs-rate__readout', 'aria-live': 'polite' }, value ? value + ' / 10' : (props.placeholder || 'Tap to rate'))
+    );
+  }
+
+  function Poster(props) {
+    if (props.src) return h('img', { className: 'rs-poster__img', src: props.src, alt: '', loading: 'lazy' });
+    return h('span', { className: cx('rs-poster__fallback', 'rs-poster__fallback--' + (props.tone || 'night')), 'aria-hidden': 'true' },
+      h('span', null, (props.title || '?').charAt(0)));
+  }
+
+  function MovieCard(props) {
+    var titleId = React.useId ? React.useId() : undefined;
+    var meta = [props.year, props.kind].filter(Boolean).join(' · ');
+    return h('article', { className: cx('rs-card', props.className), 'aria-labelledby': titleId },
+      h('a', { className: 'rs-card__poster', href: props.href || '#', 'aria-labelledby': titleId },
+        h(Poster, { src: props.poster, title: props.title, tone: props.tone })),
+      h('h3', { className: 'rs-card__title', id: titleId, title: props.title }, props.title),
+      h('div', { className: 'rs-card__meta' },
+        h('span', { className: 'rs-card__year' }, meta),
+        h('span', { className: 'rs-card__actions' },
+          props.onLike !== undefined || props.liked !== undefined ? h(IconButton, { icon: 'heart', size: 'sm', label: 'Like ' + props.title, pressed: !!props.liked, onClick: props.onLike, className: 'rs-card__like' }) : null,
+          props.onWatched !== undefined || props.watched !== undefined ? h(IconButton, { icon: 'eye', size: 'sm', label: 'Mark ' + props.title + ' as watched', pressed: !!props.watched, onClick: props.onWatched, className: 'rs-card__watched' }) : null,
+          props.rating !== undefined ? h(RatingBadge, { value: props.rating }) : null
+        )
+      )
+    );
+  }
+
+  function PosterRow(props) {
+    var track = React.useRef(null);
+    function scroll(dir) {
+      var el = track.current;
+      if (!el) return;
+      el.scrollBy({ left: dir * el.clientWidth * 0.85, behavior: 'smooth' });
+    }
+    var headingId = React.useId ? React.useId() : undefined;
+    return h('section', { className: cx('rs-row', props.className), 'aria-labelledby': props.title ? headingId : undefined, 'aria-label': props.title ? undefined : props.label },
+      props.title ? h('div', { className: 'rs-row__head' },
+        h('h2', { className: 'rs-row__title', id: headingId }, props.title),
+        props.seeAllHref ? h('a', { className: 'rs-row__all', href: props.seeAllHref }, 'See all') : null) : null,
+      h('div', { className: 'rs-row__frame' },
+        h(IconButton, { icon: 'chevronLeft', label: 'Scroll back', variant: 'scrim', size: 'lg', className: 'rs-row__arrow rs-row__arrow--l', onClick: function () { scroll(-1); } }),
+        h('ul', { className: 'rs-row__track', ref: track },
+          React.Children.map(props.children, function (c, i) { return h('li', { key: i, className: 'rs-row__item' }, c); })),
+        h(IconButton, { icon: 'chevronRight', label: 'Scroll forward', variant: 'scrim', size: 'lg', className: 'rs-row__arrow rs-row__arrow--r', onClick: function () { scroll(1); } })
+      )
+    );
+  }
+
+  function Hero(props) {
+    var meta = [];
+    if (props.rating !== undefined) meta.push(h(RatingBadge, { key: 'r', value: props.rating, tone: 'brand', size: 'md' }));
+    if (props.year) meta.push(h('span', { key: 'y' }, props.year));
+    if (props.length) meta.push(h('span', { key: 'l' }, props.length));
+    return h('section', { className: cx('rs-hero', props.className), 'aria-label': props.title },
+      h('div', { className: 'rs-hero__art', 'aria-hidden': 'true' },
+        props.image ? h('img', { src: props.image, alt: '' }) : null),
+      h('div', { className: 'rs-hero__body' },
+        props.ageRating ? h(AgeBadge, { rating: props.ageRating }) : null,
+        meta.length ? h('div', { className: 'rs-hero__meta' }, meta) : null,
+        h('h1', { className: 'rs-hero__title' }, props.title),
+        props.synopsis ? h('p', { className: 'rs-hero__synopsis' }, props.synopsis) : null,
+        h('div', { className: 'rs-hero__actions' },
+          h(Button, { variant: 'primary', icon: 'play', onClick: props.onWatch }, props.watchLabel || 'Watch trailer'),
+          h(Button, { variant: 'secondary', icon: 'plus', onClick: props.onAddToList }, props.addLabel || 'Add to list'))
+      ),
+      props.children ? h('div', { className: 'rs-hero__foot' }, props.children) : null
+    );
+  }
+
+  window.Reelscore = Object.assign(window.Reelscore || {}, {
+    Icon: Icon, Button: Button, IconButton: IconButton, NavBar: NavBar, BottomNav: BottomNav,
+    Tabs: Tabs, GenreChips: GenreChips, AgeBadge: AgeBadge, RatingBadge: RatingBadge,
+    RatingInput: RatingInput, MovieCard: MovieCard, PosterRow: PosterRow, Hero: Hero
+  });
+})();
+
+</script>
+<script>
+(function () {
+  var R = window.Reelscore, h = React.createElement;
+  var useState = React.useState;
+
+  var ICON = 'IconName';
+  function lit() { return Array.prototype.map.call(arguments, function (s) { return '"' + s + '"'; }).join(' | '); }
+
+  var FILMS = [['Harbor Lights', '2024', 8.1, 'night'], ['Ironbark', '2023', 7.3, 'red'], ['Salt & Static', '2025', 6.4, 'slate'], ['The Long Orbit', '2022', 9.2, 'gold'], ['Quiet Hours', '2024', 5.8, 'night'], ['Paper Lanterns', '2021', 7.9, 'slate'], ['Northline', '2025', 8.6, 'red'], ['Glass Orchard', '2023', 6.9, 'night']];
+  var LINKS = [{ label: 'Home', active: true }, { label: 'Movies' }, { label: 'Series' }, { label: 'New ratings' }, { label: 'My lists' }];
+  var TABS = [{ id: 'trending', label: 'Trending now' }, { id: 'top', label: 'Top rated' }, { id: 'critics', label: 'Critics’ picks' }, { id: 'premieres', label: 'Premieres' }, { id: 'recent', label: 'Recently added' }];
+  var GENRES = ['Action', 'Adventure', 'Animation', 'Biography', 'Crime', 'Comedy', 'Documentary', 'Drama', 'Horror', 'Sci-fi'];
+
+  function cards(n) {
+    return FILMS.slice(0, n).map(function (d, i) {
+      return h(R.MovieCard, { key: d[0], title: d[0], year: d[1], rating: d[2], tone: d[3], liked: i % 3 === 0, watched: i % 2 === 0, onLike: function () {}, onWatched: function () {} });
+    });
+  }
+
+  /* ---- Component reference data: props from index.d.ts, defaults from bundle.js, guidance from each README ---- */
+  var DOCS = [
+    {
+      name: 'Icon', group: 'Foundations',
+      summary: 'Fifteen filled glyphs on a 24px grid. They take their color from the parent (currentColor) and are used inside every other component.',
+      props: [
+        { n: 'name', t: ICON, req: true, d: 'Which glyph to draw. One of the names shown above. An unknown name falls back to star.' },
+        { n: 'size', t: 'number', def: '20', d: 'Width and height in px. Use 13–16 beside text, 20 in buttons, 22–24 in navigation.' },
+        { n: 'title', t: 'string', d: 'Accessible name. Leave it out for decorative icons, which are then hidden from screen readers. Set it only when the icon stands alone and carries meaning.' },
+        { n: 'className', t: 'string', d: 'Extra class on the <svg>.' }
+      ],
+      statics: [{ n: 'Icon.names', t: 'IconName[]', d: 'All 15 glyph names, in display order.' }],
+      rules: ['Color comes from the parent: <code>--ink</code> in chrome, <code>--ink-muted</code> when inactive, <code>--brand</code> for a liked heart, <code>--gold</code> for stars.', 'An icon button gets its accessible name from IconButton’s <code>label</code>, not from Icon’s <code>title</code>.', 'Don’t stroke, outline or recolor parts of a glyph, and don’t mix in another icon set.'],
+      code: '<Icon name="star" size={16} />\n<Icon name="heart" size={20} title="Liked" />',
+      render: function () {
+        return h('div', { className: 'icon-grid' }, R.Icon.names.map(function (n) {
+          return h('div', { key: n, className: 'icon-cell' }, h(R.Icon, { name: n, size: 24 }), h('span', null, n));
+        }));
+      }
+    },
+    {
+      name: 'Button', group: 'Actions',
+      summary: 'A pill-shaped, uppercase action. Primary is the brand red with a soft glow; secondary is a neutral pill; ghost is outlined.',
+      props: [
+        { n: 'children', t: 'ReactNode', req: true, d: 'The label. Rendered uppercase; keep it to two words or fewer (WATCH TRAILER, ADD TO LIST).' },
+        { n: 'variant', t: lit('primary', 'secondary', 'ghost'), def: '"primary"', d: 'Visual weight. Use one primary per view and pair it with a secondary.' },
+        { n: 'size', t: lit('sm', 'md', 'lg'), def: '"md"', d: 'Height: 36, 44 or 52px. md meets the 44px tap target; use sm only in dense desktop toolbars.' },
+        { n: 'icon', t: ICON, d: 'Leading icon, drawn at 16px for sm and 18px otherwise.' },
+        { n: 'fullWidth', t: 'boolean', def: 'false', d: 'Stretches to fill its container. Use it for phone button pairs in a two-column grid.' },
+        { n: 'href', t: 'string', d: 'Renders an <a> link styled as a button instead of a <button>.' },
+        { n: 'onClick', t: '(event) => void', d: 'Click handler.' },
+        { n: 'disabled', t: 'boolean', def: 'false', d: 'Greys the button out (surface-300 fill, ink-faint label, no glow) and blocks clicks.' },
+        { n: 'type', t: lit('button', 'submit', 'reset'), def: '"button"', d: 'Native button type. Set "submit" inside forms.' },
+        { n: 'className', t: 'string', d: 'Extra class on the root element.' }
+      ],
+      rest: 'Other native <button> attributes (id, aria-*, data-*, style) are passed through.',
+      rules: ['Labels are verbs: WATCH TRAILER, ADD TO LIST, RATE.', 'On phones, place a pair in a two-column grid with <code>fullWidth</code>; stack them under 360px.', '<code>ghost</code> is for low-priority actions on surface-0 or surface-100, never on artwork.'],
+      code: '<Button icon="play" onClick={watch}>Watch trailer</Button>\n<Button variant="secondary" icon="plus">Add to list</Button>\n<Button variant="ghost">Write a review</Button>',
+      render: function () {
+        return h('div', { className: 'ex ex--col' },
+          h('div', { className: 'ex' },
+            h(R.Button, { icon: 'play' }, 'Watch trailer'),
+            h(R.Button, { variant: 'secondary', icon: 'plus' }, 'Add to list'),
+            h(R.Button, { variant: 'ghost' }, 'Write a review'),
+            h(R.Button, { disabled: true }, 'Rated')),
+          h('div', { className: 'ex' },
+            h(R.Button, { size: 'sm', icon: 'star' }, 'Rate'),
+            h(R.Button, { size: 'md', icon: 'play' }, 'Watch trailer'),
+            h(R.Button, { size: 'lg', icon: 'play' }, 'Watch now')),
+          h('div', { style: { width: 'min(343px, 100%)', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 12 } },
+            h(R.Button, { icon: 'play', fullWidth: true }, 'Watch'),
+            h(R.Button, { variant: 'secondary', icon: 'plus', fullWidth: true }, 'My list')),
+          h('span', { className: 'ex__cap' }, 'Variants and disabled · sizes sm, md, lg · phone pair with fullWidth'));
+      }
+    },
+    {
+      name: 'IconButton', group: 'Actions',
+      summary: 'A circular, icon-only control for search, notifications, carousel arrows and the like and watched toggles on cards.',
+      props: [
+        { n: 'icon', t: ICON, req: true, d: 'The glyph to show.' },
+        { n: 'label', t: 'string', req: true, d: 'Accessible name and tooltip. Always pass it; there is no visible text.' },
+        { n: 'variant', t: lit('ghost', 'filled', 'outline', 'scrim'), def: '"ghost"', d: 'ghost is bare; filled sits on plain surfaces; outline adds a visible ring; scrim is a dark disc for use over artwork and posters.' },
+        { n: 'size', t: lit('sm', 'md', 'lg'), def: '"md"', d: '28, 40 or 48px. sm is only for card meta rows and keeps an invisible 44px hit area.' },
+        { n: 'pressed', t: 'boolean', d: 'Makes it a toggle and sets aria-pressed. A pressed heart turns brand red. Leave it undefined for a plain button.' },
+        { n: 'badge', t: 'boolean', def: 'false', d: 'Shows a small red unread dot.' },
+        { n: 'onClick', t: '(event) => void', d: 'Click handler.' },
+        { n: 'disabled', t: 'boolean', def: 'false', d: 'Blocks clicks.' },
+        { n: 'className', t: 'string', d: 'Extra class on the <button>.' }
+      ],
+      rest: 'Other native <button> attributes are passed through.',
+      rules: ['Pass <code>pressed</code> for on/off state (liked, watched) so screen readers announce it.', 'Use <code>scrim</code> over artwork and posters, <code>filled</code> on plain surfaces.', 'On touch screens every size grows to at least 32px, and md and lg to 44px.'],
+      code: '<IconButton icon="bell" label="Notifications, 2 new" badge />\n<IconButton icon="heart" label="Like Harbor Lights" size="sm"\n  pressed={liked} onClick={() => setLiked(!liked)} />',
+      render: function () {
+        function Demo() {
+          var l = useState(true), w = useState(false);
+          return h('div', { className: 'ex ex--col' },
+            h('div', { className: 'ex' },
+              h(R.IconButton, { icon: 'search', label: 'Search' }),
+              h(R.IconButton, { icon: 'bell', label: 'Notifications, 2 new', badge: true }),
+              h(R.IconButton, { icon: 'plus', label: 'Add to list', variant: 'filled' }),
+              h(R.IconButton, { icon: 'list', label: 'Lists', variant: 'outline' }),
+              h('span', { style: { display: 'inline-grid', placeItems: 'center', width: 96, height: 64, borderRadius: 4, background: 'linear-gradient(135deg, var(--gold-deep), var(--brand-press))' } },
+                h(R.IconButton, { icon: 'chevronRight', label: 'Scroll forward', variant: 'scrim', size: 'lg' })),
+              h(R.IconButton, { icon: 'heart', label: 'Like', size: 'sm', pressed: l[0], onClick: function () { l[1](!l[0]); } }),
+              h(R.IconButton, { icon: 'eye', label: 'Mark as watched', size: 'sm', pressed: w[0], onClick: function () { w[1](!w[0]); } })),
+            h('span', { className: 'ex__cap' }, 'ghost · badge · filled · outline · scrim over artwork · sm toggles (try them)'));
+        }
+        return h(Demo);
+      }
+    },
+    {
+      name: 'NavBar', group: 'Navigation', responsive: true,
+      summary: 'The top bar: red wordmark, centred section links with a red underline on the active one, and search, notifications and account on the right.',
+      props: [
+        { n: 'links', t: 'NavLink[]', def: '[]', d: 'Section links. Mark exactly one active; it gets aria-current="page". Keep it to five or fewer.', shape: '{ label: string; href?: string; active?: boolean }' },
+        { n: 'brand', t: 'string', def: '"Reelscore"', d: 'Wordmark text, set in Bebas Neue in brand red.' },
+        { n: 'homeHref', t: 'string', def: '"/"', d: 'Where the wordmark links.' },
+        { n: 'avatarSrc', t: 'string', d: 'Account photo URL.' },
+        { n: 'initials', t: 'string', d: 'Shown in the avatar when there is no avatarSrc. Without either, a user icon is shown.' },
+        { n: 'avatarLabel', t: 'string', def: '"Account"', d: 'Accessible name of the avatar button.' },
+        { n: 'notifications', t: 'number', d: 'Unread count. Any value above 0 shows a red dot and is announced ("Notifications, 2 new").' },
+        { n: 'sticky', t: 'boolean', def: 'false', d: 'Sticks the bar to the top of the page (z-nav layer). Use it on long pages.' },
+        { n: 'onSearch', t: '() => void', d: 'Search button handler.' },
+        { n: 'onNotifications', t: '() => void', d: 'Bell button handler.' },
+        { n: 'onAccount', t: '() => void', d: 'Avatar button handler.' },
+        { n: 'className', t: 'string', d: 'Extra class on the <header>.' }
+      ],
+      rules: ['Responds to its own width: under 768px only the wordmark, search and avatar remain (56px tall). Pair it with BottomNav there.', 'Links are one or two words each, in sentence case.'],
+      code: '<NavBar\n  links={[{ label: "Home", active: true }, { label: "Movies" }, { label: "Series" }]}\n  notifications={2}\n  initials="CH"\n  sticky\n/>',
+      flush: true,
+      render: function () { return h(R.NavBar, { links: LINKS, notifications: 2, initials: 'CH' }); }
+    },
+    {
+      name: 'BottomNav', group: 'Navigation', responsive: true, startPhone: true,
+      summary: 'The phone navigation bar: up to five icon-and-label destinations pinned to the bottom of the screen.',
+      props: [
+        { n: 'items', t: 'BottomNavItem[]', def: '[]', d: 'Destinations, up to five. Use the same ones as NavBar, in the same order, plus Search.', shape: '{ label: string; icon?: IconName = "home"; href?: string; active?: boolean }' },
+        { n: 'label', t: 'string', def: '"Primary"', d: 'Accessible name of the <nav>.' },
+        { n: 'fixed', t: 'boolean', def: 'true', d: 'Pins the bar to the bottom of the viewport. Set false to place it in normal flow.' },
+        { n: 'hideOnDesktop', t: 'boolean', def: 'true', d: 'Hides the bar when the viewport is 768px or wider, where NavBar shows the links.' },
+        { n: 'className', t: 'string', d: 'Extra class on the <nav>.' }
+      ],
+      rules: ['Pad the page bottom by <code>var(--bottom-nav-height)</code> so content is never hidden behind it. The bar adds the safe-area inset itself.', 'Labels are one word where possible; never icons alone.'],
+      code: '<BottomNav items={[\n  { label: "Home", icon: "home", active: true },\n  { label: "Movies", icon: "film" },\n  { label: "Series", icon: "tv" },\n  { label: "Search", icon: "search" },\n  { label: "My lists", icon: "list" },\n]} />',
+      flush: true,
+      render: function () {
+        return h(R.BottomNav, { fixed: false, hideOnDesktop: false, items: [{ label: 'Home', icon: 'home', active: true }, { label: 'Movies', icon: 'film' }, { label: 'Series', icon: 'tv' }, { label: 'Search', icon: 'search' }, { label: 'My lists', icon: 'list' }] });
+      },
+      note: 'Shown with fixed={false} and hideOnDesktop={false} so it stays in this frame.'
+    },
+    {
+      name: 'Tabs', group: 'Navigation', responsive: true,
+      summary: 'Underlined text tabs that switch between catalogue lists such as Trending now, Top rated and Premieres.',
+      props: [
+        { n: 'items', t: 'TabItem[]', req: true, d: 'The tabs.', shape: '{ id: string; label: string; panelId?: string }' },
+        { n: 'value', t: 'string', d: 'Selected tab id when controlled. Pair it with onChange.' },
+        { n: 'defaultValue', t: 'string', def: 'first item’s id', d: 'Initially selected tab id when uncontrolled.' },
+        { n: 'onChange', t: '(id: string) => void', d: 'Called with the newly selected id.' },
+        { n: 'label', t: 'string', def: '"Sections"', d: 'Accessible name of the tablist.' },
+        { n: 'overlay', t: 'boolean', def: 'false', d: 'Translucent, blurred glass band for use over hero artwork. Use it only as the Hero’s child.' },
+        { n: 'className', t: 'string', d: 'Extra class on the root.' }
+      ],
+      rules: ['Arrow keys, Home and End move between tabs.', 'On phones the list scrolls sideways and snaps; from 768px the tabs spread across the width.', 'Active tab is ink with a 2px brand underline; inactive tabs are ink-muted.'],
+      code: '<Tabs\n  label="Browse"\n  items={[{ id: "trending", label: "Trending now" }, { id: "top", label: "Top rated" }]}\n  value={tab}\n  onChange={setTab}\n/>',
+      flush: true,
+      render: function () { return h(R.Tabs, { items: TABS, label: 'Browse' }); }
+    },
+    {
+      name: 'GenreChips', group: 'Filters', responsive: true,
+      summary: 'A row of toggleable genre pills for filtering a list. Selected genres turn red and show a check mark.',
+      props: [
+        { n: 'genres', t: 'string[]', req: true, d: 'Genre names, in sentence case, one word where possible ("Sci-fi").' },
+        { n: 'selected', t: 'string[]', d: 'Selected genres when controlled. Pair it with onChange.' },
+        { n: 'defaultSelected', t: 'string[]', def: '[]', d: 'Initially selected genres when uncontrolled.' },
+        { n: 'onChange', t: '(selected: string[]) => void', d: 'Called with the full new selection after each toggle.' },
+        { n: 'label', t: 'string', def: '"Filter by genre"', d: 'Accessible name of the chip group.' },
+        { n: 'className', t: 'string', d: 'Extra class on the root.' }
+      ],
+      rules: ['Multi-select. Each chip is a toggle with aria-pressed, and the check mark means selection never relies on color alone.', 'Phones: one line that scrolls sideways; chips are 40px tall on touch screens. From 1024px the row wraps.', 'Sits on surface-200; keep it directly under the tabs it filters.'],
+      code: '<GenreChips\n  genres={["Action", "Comedy", "Drama", "Sci-fi"]}\n  selected={genres}\n  onChange={setGenres}\n/>',
+      flush: true,
+      render: function () { return h(R.GenreChips, { genres: GENRES, defaultSelected: ['Action', 'Animation', 'Comedy'] }); }
+    },
+    {
+      name: 'AgeBadge', group: 'Ratings',
+      summary: 'A small gold tag showing the content’s age rating.',
+      props: [
+        { n: 'rating', t: 'string', req: true, d: 'The label, such as "7+", "13+" or "18+". Read aloud as "Rated 13+".' },
+        { n: 'className', t: 'string', d: 'Extra class on the <span>.' }
+      ],
+      rules: ['Place it above the hero meta row or beside a title on detail pages; never on poster cards.'],
+      code: '<AgeBadge rating="13+" />',
+      render: function () { return h('div', { className: 'ex' }, ['7+', '13+', '16+', '18+'].map(function (r) { return h(R.AgeBadge, { key: r, rating: r }); })); }
+    },
+    {
+      name: 'RatingBadge', group: 'Ratings',
+      summary: 'A star and a one-decimal score out of 10: the read-only rating on cards and in the hero.',
+      props: [
+        { n: 'value', t: 'number', req: true, d: 'The score, 0–10. Always shown with one decimal (7 shows as 7.0).' },
+        { n: 'max', t: 'number', def: '10', d: 'Scale used in the accessible label ("Rated 7.5 out of 10").' },
+        { n: 'votes', t: 'string', d: 'Pre-formatted vote count, shown in parentheses, such as "12.4k". Use it on detail pages, not cards.' },
+        { n: 'tone', t: lit('gold', 'brand'), def: '"gold"', d: 'gold for cards and lists; brand only in the hero meta row.' },
+        { n: 'size', t: lit('sm', 'md'), def: '"sm"', d: 'sm is 13px text with a 13px star; md is 16px with a 16px star.' },
+        { n: 'className', t: 'string', d: 'Extra class on the <span>.' }
+      ],
+      rules: ['Scores are always out of 10 with one decimal.', 'Screen readers hear "Rated 7.5 out of 10", plus the vote count when given.'],
+      code: '<RatingBadge value={8.1} />\n<RatingBadge value={9.2} size="md" votes="3.1k" />',
+      render: function () {
+        return h('div', { className: 'ex', style: { gap: 28 } },
+          h(R.RatingBadge, { value: 8.1 }),
+          h(R.RatingBadge, { value: 6.4, votes: '12.4k' }),
+          h(R.RatingBadge, { value: 7.5, tone: 'brand', size: 'md' }),
+          h(R.RatingBadge, { value: 9.2, size: 'md', votes: '3.1k' }));
+      }
+    },
+    {
+      name: 'RatingInput', group: 'Ratings',
+      summary: 'Five stars the viewer taps to rate a title, in half-star steps that map to a score out of 10.',
+      props: [
+        { n: 'value', t: 'number', d: 'Score when controlled: whole points 1–10, each star worth two (7 is three and a half stars). Pair it with onChange.' },
+        { n: 'defaultValue', t: 'number', def: '0', d: 'Initial score when uncontrolled. 0 means not yet rated.' },
+        { n: 'onChange', t: '(value: number) => void', d: 'Called with the new score. Save on change; there is no submit button.' },
+        { n: 'label', t: 'string', def: '"Your rating"', d: 'Accessible name of the star group. Name the title: "Your rating for Harbor Lights".' },
+        { n: 'placeholder', t: 'string', def: '"Tap to rate"', d: 'Readout text before a rating is set.' },
+        { n: 'className', t: 'string', d: 'Extra class on the root.' }
+      ],
+      rules: ['Each half star is a radio in one radiogroup. Arrow keys step by one point; Home and End jump to 1 and 10.', 'Stars are 28px, and 40px on touch screens.', 'The readout ("7 / 10") updates live.'],
+      code: '<RatingInput\n  label="Your rating for Harbor Lights"\n  value={score}\n  onChange={saveScore}\n/>',
+      render: function () {
+        return h('div', { className: 'ex ex--col' },
+          h(R.RatingInput, { defaultValue: 7, label: 'Your rating for Harbor Lights' }),
+          h(R.RatingInput, { label: 'Your rating for Ironbark' }),
+          h('span', { className: 'ex__cap' }, 'Rated at 7 / 10, and unrated. Both are live; tap or use the arrow keys.'));
+      }
+    },
+    {
+      name: 'MovieCard', group: 'Content',
+      summary: 'A 2:3 poster with the title, year, the viewer’s like and watched state, and the score. The unit of every poster row.',
+      props: [
+        { n: 'title', t: 'string', req: true, d: 'Film or series title. Truncates to one line; the full title is in the tooltip and accessible name.' },
+        { n: 'poster', t: 'string', d: 'Poster image URL. Without it, a colored placeholder shows the title’s first letter.' },
+        { n: 'href', t: 'string', def: '"#"', d: 'Where the poster links.' },
+        { n: 'year', t: 'string | number', d: 'Release year, shown under the title.' },
+        { n: 'kind', t: 'string', d: 'Format, such as "Film" or "2 seasons". Joined to the year with a dot.' },
+        { n: 'rating', t: 'number', d: 'Score out of 10, shown as a gold RatingBadge. Leave it out to hide the score.' },
+        { n: 'liked', t: 'boolean', d: 'Heart toggle state. The heart appears only when liked or onLike is passed.' },
+        { n: 'onLike', t: '() => void', d: 'Heart toggle handler.' },
+        { n: 'watched', t: 'boolean', d: 'Watched toggle state. The eye appears only when watched or onWatched is passed.' },
+        { n: 'onWatched', t: '() => void', d: 'Watched toggle handler.' },
+        { n: 'tone', t: lit('night', 'red', 'gold', 'slate'), def: '"night"', d: 'Placeholder fill when there is no poster.' },
+        { n: 'className', t: 'string', d: 'Extra class on the <article>.' }
+      ],
+      rules: ['Width is 128px under 768px and 184px above. Set the width on a wrapper if a grid needs another size.', 'Leave out the like and watched toggles for signed-out viewers.', 'Posters lift 4px with a shadow on hover and focus.'],
+      code: '<MovieCard\n  title="Harbor Lights" year="2024" kind="Film" rating={8.1}\n  poster={posterUrl}\n  liked={liked} onLike={toggleLike}\n  watched={watched} onWatched={toggleWatched}\n/>',
+      render: function () {
+        function Demo() {
+          var l = useState(true), w = useState(false);
+          return h('div', { className: 'ex', style: { alignItems: 'flex-start', gap: 16 } },
+            h(R.MovieCard, { title: 'Harbor Lights', year: '2024', kind: 'Film', rating: 8.1, tone: 'night', liked: l[0], watched: w[0], onLike: function () { l[1](!l[0]); }, onWatched: function () { w[1](!w[0]); } }),
+            h(R.MovieCard, { title: 'Ironbark', year: '2023', rating: 7.3, tone: 'red', liked: false, onLike: function () {}, onWatched: function () {} }),
+            h(R.MovieCard, { title: 'The Long Orbit: Second Contact', year: '2022', kind: '2 seasons', rating: 9.2, tone: 'gold' }),
+            h(R.MovieCard, { title: 'Salt & Static', year: '2025', rating: 6.4, tone: 'slate', watched: true, onLike: function () {}, onWatched: function () {} }));
+        }
+        return h(Demo);
+      }
+    },
+    {
+      name: 'PosterRow', group: 'Content', responsive: true,
+      summary: 'A titled, horizontally scrolling row of MovieCards. It swipes on phones and gets arrow buttons on desktop.',
+      props: [
+        { n: 'children', t: 'ReactNode', d: 'The MovieCards. Each is wrapped in a list item that snaps to the gutter.' },
+        { n: 'title', t: 'string', d: 'Row heading, such as "Trending now" or "Because you rated Ironbark".' },
+        { n: 'seeAllHref', t: 'string', d: 'Shows a red "See all" link beside the title. Needs a title.' },
+        { n: 'label', t: 'string', d: 'Accessible name for a row with no visible title.' },
+        { n: 'className', t: 'string', d: 'Extra class on the <section>.' }
+      ],
+      rules: ['From 1024px of row width, scrim arrows appear on hover or keyboard focus and scroll by most of a screen. They never show on touch-only devices.', 'Keep it to about 20 cards per row and link the rest with seeAllHref.'],
+      code: '<PosterRow title="Trending now" seeAllHref="/trending">\n  {films.map((f) => <MovieCard key={f.id} {...f} />)}\n</PosterRow>',
+      flush: true, surface: 'var(--surface-100)',
+      render: function () { return h(R.PosterRow, { title: 'Trending now', seeAllHref: '#' }, cards(8)); }
+    },
+    {
+      name: 'Hero', group: 'Content', responsive: true,
+      summary: 'The featured title at the top of a page: artwork, age badge, score, year, a spaced uppercase title, a synopsis and the Watch / Add to list pair.',
+      props: [
+        { n: 'title', t: 'string', req: true, d: 'Featured title, set uppercase with wide letter-spacing.' },
+        { n: 'image', t: 'string', d: 'Wide artwork URL, at least 1600px. Choose art with the subject on the right half so the scrim never covers a face.' },
+        { n: 'ageRating', t: 'string', d: 'Shown as an AgeBadge above the meta row.' },
+        { n: 'rating', t: 'number', d: 'Score out of 10, shown as a brand-red RatingBadge.' },
+        { n: 'year', t: 'string | number', d: 'Release year in the meta row.' },
+        { n: 'length', t: 'string', d: 'Runtime or seasons, such as "1h 54m" or "2 seasons".' },
+        { n: 'synopsis', t: 'string', d: 'One or two sentences, under 160 characters.' },
+        { n: 'watchLabel', t: 'string', def: '"Watch trailer"', d: 'Primary button label.' },
+        { n: 'addLabel', t: 'string', def: '"Add to list"', d: 'Secondary button label.' },
+        { n: 'onWatch', t: '() => void', d: 'Primary button handler.' },
+        { n: 'onAddToList', t: '() => void', d: 'Secondary button handler.' },
+        { n: 'children', t: 'ReactNode', d: 'A band along the bottom edge, usually <Tabs overlay />.' },
+        { n: 'className', t: 'string', d: 'Extra class on the <section>.' }
+      ],
+      rules: ['Phones: artwork on top at 4:3, copy below, buttons side by side at full width (stacked under 360px).', 'From 768px: copy sits over the artwork on the left, protected by a scrim gradient.'],
+      code: '<Hero\n  title="The Long Orbit" ageRating="13+" rating={7.5}\n  year="2024" length="2 seasons"\n  synopsis="Stranded on a frozen moon, a salvage crew has one week to signal home."\n  image={artUrl}\n  onWatch={playTrailer} onAddToList={addToList}\n>\n  <Tabs overlay label="Browse" items={tabs} />\n</Hero>',
+      flush: true,
+      render: function () {
+        return h(R.Hero, { title: 'The Long Orbit', ageRating: '13+', rating: 7.5, year: '2024', length: '2 seasons', synopsis: 'Stranded on a frozen moon, a salvage crew has one week to signal home before the station’s reactor fails.' },
+          h(R.Tabs, { items: TABS, overlay: true, label: 'Browse' }));
+      },
+      note: 'No artwork is set here, so the backdrop color shows where the image would load.'
+    }
+  ];
+
+  var GROUPS = ['Foundations', 'Actions', 'Navigation', 'Filters', 'Ratings', 'Content'];
+  var slug = function (s) { return s.toLowerCase(); };
+  function esc(s) { return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
+
+  /* Type cell: string-literal unions get the literal color */
+  function typeHtml(t) {
+    return esc(t).replace(/&quot;|"([^"]*)"/g, function (m) { return '<span class="lit">' + m + '</span>'; });
+  }
+  /* Tiny JSX highlighter for the usage blocks */
+  function hl(code) {
+    /* one pass, so no rule re-matches markup another rule inserted */
+    return esc(code).replace(/("[^"\n]*")|(&lt;\/?)([A-Z][A-Za-z]*)|\b([a-zA-Z]+)(?==)/g, function (m, str, open, tag, attr) {
+      if (str) return '<span class="t-str">' + str + '</span>';
+      if (tag) return open + '<span class="t-tag">' + tag + '</span>';
+      return '<span class="t-attr">' + attr + '</span>';
+    });
+  }
+
+  /* Index */
+  var idx = document.getElementById('idx');
+  var brand = document.createElement('div');
+  brand.className = 'idx__brand';
+  brand.innerHTML = '<span class="idx__mark">Reelscore</span><span class="idx__sub">Component reference</span>';
+  idx.appendChild(brand);
+  GROUPS.forEach(function (g) {
+    var items = DOCS.filter(function (d) { return d.group === g; });
+    var box = document.createElement('div');
+    box.className = 'idx__group';
+    box.innerHTML = '<p class="idx__label">' + g + '</p>' + items.map(function (d) {
+      return '<a href="#' + slug(d.name) + '" data-target="' + slug(d.name) + '">' + d.name + '<span class="idx__count">' + d.props.length + '</span></a>';
+    }).join('');
+    idx.appendChild(box);
+  });
+
+  var totalProps = DOCS.reduce(function (a, d) { return a + d.props.length; }, 0);
+  document.getElementById('facts').innerHTML =
+    '<li><strong>' + DOCS.length + '</strong> components</li>' +
+    '<li><strong>' + totalProps + '</strong> props</li>' +
+    '<li><strong>' + R.Icon.names.length + '</strong> icons</li>' +
+    '<li>React <strong>18</strong></li>';
+
+  /* Sections, in index order */
+  var main = document.getElementById('main');
+  var ordered = [];
+  GROUPS.forEach(function (g) { DOCS.forEach(function (d) { if (d.group === g) ordered.push(d); }); });
+
+  ordered.forEach(function (d) {
+    var id = slug(d.name);
+    var sec = document.createElement('section');
+    sec.className = 'comp';
+    sec.id = id;
+    sec.setAttribute('aria-labelledby', id + '-h');
+
+    var rows = d.props.map(function (p) {
+      return '<tr>' +
+        '<td><span class="p-name">' + p.n + '</span>' + (p.req ? '<span class="p-req">Required</span>' : '') + '</td>' +
+        '<td class="p-type">' + typeHtml(p.t) + '</td>' +
+        '<td>' + (p.def ? '<span class="p-def">' + esc(p.def) + '</span>' : '<span class="p-none">—</span>') + '</td>' +
+        '<td class="p-desc"><p>' + esc(p.d) + '</p>' + (p.shape ? '<div class="p-shape">' + esc(p.shape) + '</div>' : '') + '</td>' +
+        '</tr>';
+    }).join('');
+    var statics = (d.statics || []).map(function (p) {
+      return '<tr><td><span class="p-name">' + p.n + '</span></td><td class="p-type">' + esc(p.t) + '</td><td><span class="p-none">static</span></td><td class="p-desc"><p>' + esc(p.d) + '</p></td></tr>';
+    }).join('');
+
+    var bar = '<div class="stage__bar"><span class="stage__title">Live example</span>' +
+      (d.responsive ? '<div class="seg" role="group" aria-label="Preview width">' +
+        '<button type="button" id="' + id + '-w-full" data-w="full" aria-pressed="' + (d.startPhone ? 'false' : 'true') + '">Full width</button>' +
+        '<button type="button" id="' + id + '-w-phone" data-w="phone" aria-pressed="' + (d.startPhone ? 'true' : 'false') + '">Phone 375</button></div>' : '') +
+      '</div>';
+
+    sec.innerHTML =
+      '<div class="comp__head">' +
+        '<p class="comp__eyebrow">' + d.group + '</p>' +
+        '<h2 class="comp__name" id="' + id + '-h"><a href="#' + id + '">' + d.name + '</a></h2>' +
+        '<p class="comp__sum">' + esc(d.summary) + '</p>' +
+      '</div>' +
+      '<div class="stage" data-width="' + (d.startPhone ? 'phone' : 'full') + '">' + bar +
+        '<div class="stage__canvas' + (d.flush ? ' stage__canvas--flush' : '') + '"' + (d.surface ? ' style="background:' + d.surface + '"' : '') + '>' +
+          '<div class="stage__frame" id="' + id + '-root"></div></div>' +
+      '</div>' +
+      (d.note ? '<p class="props-note" style="margin-top:-12px">' + esc(d.note) + '</p>' : '') +
+      '<div class="code"><button type="button" class="copy" id="' + id + '-copy">Copy</button><pre><code>' + hl(d.code) + '</code></pre></div>' +
+      '<h3 class="sub">Props</h3>' +
+      '<div class="props-wrap"><table class="props"><thead><tr><th scope="col">Prop</th><th scope="col">Type</th><th scope="col">Default</th><th scope="col">Description</th></tr></thead><tbody>' + rows + statics + '</tbody></table></div>' +
+      (d.rest ? '<p class="props-note">' + esc(d.rest) + '</p>' : '') +
+      '<h3 class="sub">Guidelines</h3>' +
+      '<ul class="rules">' + d.rules.map(function (r) { return '<li><span>' + r + '</span></li>'; }).join('') + '</ul>';
+
+    main.appendChild(sec);
+
+    try {
+      ReactDOM.createRoot(document.getElementById(id + '-root')).render(d.render());
+    } catch (e) {
+      document.getElementById(id + '-root').textContent = 'This example could not render: ' + e.message;
+    }
+
+    var stage = sec.querySelector('.stage');
+    sec.querySelectorAll('.seg button').forEach(function (b) {
+      b.addEventListener('click', function () {
+        stage.setAttribute('data-width', b.getAttribute('data-w'));
+        sec.querySelectorAll('.seg button').forEach(function (o) { o.setAttribute('aria-pressed', o === b ? 'true' : 'false'); });
+      });
+    });
+
+    var copyBtn = document.getElementById(id + '-copy');
+    copyBtn.addEventListener('click', function () {
+      var pre = sec.querySelector('.code pre');
+      function selectIt() {
+        var r = document.createRange(); r.selectNodeContents(pre);
+        var s = window.getSelection(); s.removeAllRanges(); s.addRange(r);
+        copyBtn.textContent = 'Selected';
+      }
+      try {
+        navigator.clipboard.writeText(d.code).then(function () { copyBtn.textContent = 'Copied'; }, selectIt);
+      } catch (e) { selectIt(); }
+      setTimeout(function () { copyBtn.textContent = 'Copy'; }, 1600);
+    });
+  });
+
+  /* Highlight the section in view */
+  var links = Array.prototype.slice.call(idx.querySelectorAll('a[data-target]'));
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        links.forEach(function (a) {
+          var on = a.getAttribute('data-target') === e.target.id;
+          a.classList.toggle('is-current', on);
+          if (on) a.setAttribute('aria-current', 'true'); else a.removeAttribute('aria-current');
+          if (on && window.matchMedia('(max-width: 900px)').matches) a.scrollIntoView({ block: 'nearest', inline: 'center' });
+        });
+      });
+    }, { rootMargin: '-30% 0px -60% 0px' });
+    document.querySelectorAll('.comp').forEach(function (s) { io.observe(s); });
+  }
+})();
+</script>

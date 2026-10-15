@@ -1,0 +1,39 @@
+{
+  "projectId": "5d8d51f1-6acc-48e6-8905-255cfaf52391",
+  "shape": "package",
+  "pkg": "reelscore",
+  "globalName": "Reelscore",
+  "cssEntry": "dist/reelscore.css",
+  "docsDir": "docs",
+  "guidelinesGlob": [
+    "guides/**/*.md"
+  ],
+  "overrides": {
+    "Hero": {
+      "cardMode": "column"
+    },
+    "NavBar": {
+      "cardMode": "column"
+    },
+    "Tabs": {
+      "cardMode": "column"
+    },
+    "GenreChips": {
+      "cardMode": "column"
+    },
+    "PosterRow": {
+      "cardMode": "column"
+    },
+    "Footer": {
+      "cardMode": "column"
+    },
+    "Button": {
+      "cardMode": "column"
+    }
+  },
+  "dtsPropsFor": {
+    "Button": "variant?: \"primary\" | \"secondary\" | \"ghost\"; size?: \"sm\" | \"md\" | \"lg\"; icon?: \"star\" | \"heart\" | \"eye\" | \"play\" | \"plus\" | \"search\" | \"bell\" | \"chevronLeft\" | \"chevronRight\" | \"home\" | \"film\" | \"tv\" | \"list\" | \"check\" | \"user\"; fullWidth?: boolean; href?: string; children?: React.ReactNode; onClick?: React.MouseEventHandler<HTMLButtonElement>; disabled?: boolean; type?: \"button\" | \"submit\" | \"reset\"; className?: string; id?: string; style?: React.CSSProperties;",
+    "IconButton": "icon: \"star\" | \"heart\" | \"eye\" | \"play\" | \"plus\" | \"search\" | \"bell\" | \"chevronLeft\" | \"chevronRight\" | \"home\" | \"film\" | \"tv\" | \"list\" | \"check\" | \"user\"; /** Accessible name and tooltip. Required. */ label: string; variant?: \"ghost\" | \"filled\" | \"outline\" | \"scrim\"; size?: \"sm\" | \"md\" | \"lg\"; /** Makes it a toggle (aria-pressed). */ pressed?: boolean; /** Shows an unread dot. */ badge?: boolean; onClick?: React.MouseEventHandler<HTMLButtonElement>; disabled?: boolean; type?: \"button\" | \"submit\" | \"reset\"; className?: string; id?: string; style?: React.CSSProperties;"
+  },
+  "readmeHeader": ".design-sync/conventions.md"
+}

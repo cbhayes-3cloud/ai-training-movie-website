@@ -1,0 +1,30 @@
+<!-- @dsCard group="Content" height=1400 width=1200 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Hero — preview</title>
+<style>
+  body { background: var(--surface-100); }
+  .pv { padding: 16px; display: flex; flex-direction: column; gap: 16px; }
+  .pv-row { display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .pv-label { font: 500 12px/16px var(--font-sans); color: var(--ink-muted); letter-spacing: .04em; text-transform: uppercase; margin: 0; }
+  .pv-split { display: flex; gap: 24px; align-items: flex-start; }
+  .pv-phone { width: 375px; flex: none; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px var(--surface-400); background: var(--surface-100); position: relative; }
+  .pv-wide { flex: 1; min-width: 0; border-radius: 12px; overflow: hidden; box-shadow: 0 0 0 1px var(--surface-400); background: var(--surface-100); }
+  .pv-art { background: var(--backdrop); }
+</style></head>
+<body>
+<div id="root"></div>
+<script>
+  var R = window.Reelscore, h = React.createElement;
+  var tabs = [{ id: 'trending', label: 'Trending now' }, { id: 'top', label: 'Top rated' }, { id: 'originals', label: 'Critics\u2019 picks' }, { id: 'premieres', label: 'Premieres' }, { id: 'recent', label: 'Recently added' }];
+  var props = { title: 'The Long Orbit', ageRating: '13+', rating: 7.5, year: '2024', length: '2 seasons',
+    synopsis: 'Stranded on a frozen moon, a salvage crew has one week to signal home before the station\u2019s reactor fails.' };
+  ReactDOM.createRoot(document.getElementById('root')).render(
+    h('div', { className: 'pv' },
+      h('p', { className: 'pv-label' }, 'From 768px: copy over artwork, scrim from the left'),
+      h('div', { className: 'pv-wide' }, h(R.Hero, props, h(R.Tabs, { items: tabs, overlay: true, label: 'Browse' }))),
+      h('p', { className: 'pv-label' }, 'Phone: artwork on top, copy below, full-width buttons'),
+      h('div', { className: 'pv-phone' }, h(R.Hero, props))));
+</script>
+</body>
+</html>

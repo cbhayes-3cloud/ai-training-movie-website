@@ -1,0 +1,33 @@
+{
+  "v": 3,
+  "assetGroups": {},
+  "blobs": {},
+  "createdOnFiles": {
+    "at": "2026-10-12T16:48:43Z",
+    "v": 1
+  },
+  "docs": {
+    "sections": []
+  },
+  "groups": [],
+  "lastChange": {
+    "at": "2026-10-12T16:48:43Z",
+    "by": "Chris",
+    "note": "Initial system from the reference screenshot: tokens, 13 components, brand book, cover.",
+    "via": "Claude (Cowork)"
+  },
+  "layout": "files",
+  "libraries": [
+    {
+      "name": "react",
+      "version": "18"
+    },
+    {
+      "name": "react-dom",
+      "version": "18"
+    }
+  ],
+  "namespace": "Reelscore",
+  "sections": {},
+  "title": "Reelscore"
+}
