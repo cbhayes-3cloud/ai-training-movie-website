@@ -1,0 +1,17 @@
+import './react-global.js';
+import './reelscore.iife.js';
+const R = window.Reelscore;
+export const Icon = R.Icon;
+export const Button = R.Button;
+export const IconButton = R.IconButton;
+export const NavBar = R.NavBar;
+export const BottomNav = R.BottomNav;
+export const Tabs = R.Tabs;
+export const GenreChips = R.GenreChips;
+export const AgeBadge = R.AgeBadge;
+export const RatingBadge = R.RatingBadge;
+export const RatingInput = R.RatingInput;
+export const MovieCard = R.MovieCard;
+export const PosterRow = R.PosterRow;
+export const Hero = R.Hero;
+export const Footer = R.Footer;
