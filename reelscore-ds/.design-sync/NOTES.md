@@ -28,6 +28,9 @@
   - the Claude Design project **Reelscore** (`5d8d51f1-6acc-48e6-8905-255cfaf52391`, `config.json` `projectId`), which `/design-sync` writes to. Its `_ds_bundle.js` is a build of the components and was out of date with the Hero, Tabs and Footer changes until it was re-synced;
   - the mockup canvas **Reelscore homepage concepts** (`C8CXfJ3Tpbsnr7xi77fX3t`), whose `project/ds/reelscore/` holds a copy of the bundle and stylesheet. Its `tokens.css` comes from this canvas.
 - Removed: the **Reelscore Components** artifact (`X6zcdDTtEy2xN4iJaDdgxT`), an older single-page copy of the components.
+- **Last `/design-sync` run (2026-10-16):** atomic path into the pinned project `5d8d51f1-…`. Build, validate and render check passed with 15/15 previews. Hero, Tabs and Footer were re-captured and graded `good`; the rest carried forward. Uploaded 83 content files, the sentinel, and `_ds_sync.json` last; the remote list confirms all 85 of ours. No deletes were needed.
+- **Setup for `/design-sync` on this machine:** the render check needs Playwright **1.61.1** in `.ds-sync/` (git-ignored) to match the cached Chromium-1228. Install it with `npm i playwright@1.61.1` inside `.ds-sync/`.
+- **Planned rename:** the Claude Design project **Reelscore** (`5d8d51f1-…`) is to be renamed **Reelscore - Design Agent Library**, so it's not confused with the source artifact. Renaming it doesn't change the project ID.
 
 ## Known render warns
 - (none outstanding after authoring)
