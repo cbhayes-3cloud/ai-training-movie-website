@@ -23,7 +23,11 @@
 - **Footer design credit (added 2026-10-16):** Footer always ends with "Movie reel design by Jake." (the movie reel / film-strip cast design; see CastStrip). `designCredit` rewords it. Published to the source artifact (version 11, 2026-10-16).
 - **Tabs left-aligned (2026-10-16):** from 768px the tab list was `justify-content: space-between`; it's now `flex-start`, so tabs sit left on the gutter at every width. Published to the source artifact (version 11, 2026-10-16).
 - **Sync status (2026-10-16):** the source Design System artifact matches `project/` here: `bundle.js`, `bundle.css`, `index.d.ts`, the Hero/Tabs/Footer READMEs and `Footer/preview.html`. Its index `lastChange` was set by the re-sync.
-- **Two other Design sources, not synced from here:** the Design artifact (`C8CXfJ3Tpbsnr7xi77fX3t`) is the source of `tokens.css` only. Its `project/ds/reelscore/components/bundle.js` is an Oct 14 copy and predates Hero, Tabs, Footer and CastStrip changes, so don't use its components. The Claude Design project `5d8d51f1-6acc-48e6-8905-255cfaf52391` (`config.json` `projectId`) is a separate project that `/design-sync` targets.
+- **One source of truth:** the Design System artifact (`BLb9xkKXHpcwS8q7buSxrS`) is the only place components are edited. Everything else is a copy of it:
+  - this repo's `project/` and `dist/`, which are synced from it by hand (see above);
+  - the Claude Design project **Reelscore** (`5d8d51f1-6acc-48e6-8905-255cfaf52391`, `config.json` `projectId`), which `/design-sync` writes to. Its `_ds_bundle.js` is a build of the components and was out of date with the Hero, Tabs and Footer changes until it was re-synced;
+  - the mockup canvas **Reelscore homepage concepts** (`C8CXfJ3Tpbsnr7xi77fX3t`), whose `project/ds/reelscore/` holds a copy of the bundle and stylesheet. Its `tokens.css` comes from this canvas.
+- Removed: the **Reelscore Components** artifact (`X6zcdDTtEy2xN4iJaDdgxT`), an older single-page copy of the components.
 
 ## Known render warns
 - (none outstanding after authoring)
