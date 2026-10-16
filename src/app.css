@@ -82,22 +82,6 @@
 .title-credits dt, .title-details dt { color: var(--ink-muted); }
 .title-credits dd, .title-details dd { margin: 0; }
 
-/* Cast: a sideways-scrolling row of circles */
-.title-cast {
-  margin: 0; padding: 0 0 var(--space-2); list-style: none;
-  display: flex; gap: var(--space-4); overflow-x: auto; scroll-snap-type: x mandatory;
-}
-.title-cast li {
-  flex: none; width: 104px; scroll-snap-align: start;
-  display: flex; flex-direction: column; align-items: center; gap: var(--space-2); text-align: center;
-}
-.title-cast__photo {
-  display: grid; place-items: center; width: 88px; height: 88px; border-radius: 50%;
-  object-fit: cover; background: var(--backdrop); color: var(--ink); font: 600 24px/1 var(--font-sans);
-}
-.title-cast__name { font: 500 14px/18px var(--font-sans); }
-.title-cast__role { font-size: 12px; line-height: 16px; color: var(--ink-muted); }
-
 .title-review { display: flex; flex-direction: column; gap: var(--space-3); padding: 20px; border-radius: var(--radius-md); background: var(--surface-200); }
 .title-review__head { display: flex; align-items: center; gap: var(--space-3); }
 .title-review__avatar {
@@ -119,3 +103,30 @@
 .title-score__value { font-family: var(--font-display); font-size: 72px; line-height: .9; color: var(--gold); }
 .title-score__meta { display: flex; flex-direction: column; gap: 2px; padding-bottom: var(--space-1); font-size: 13px; line-height: 16px; color: var(--ink-muted); }
 .title-attribution { margin: 0; font-size: 12px; line-height: 16px; color: var(--ink-muted); }
+
+/* ---- List pages (/lists/:list): a page title and every title in a grid, no scrolling rows ---- */
+
+.list-page { padding: var(--space-6) var(--gutter-sm) var(--space-7); }
+@media (min-width: 768px) { .list-page { padding: var(--space-7) var(--gutter-md) var(--space-8); } }
+@media (min-width: 1280px) { .list-page { padding-inline: var(--gutter-lg); } }
+
+.list-page__head { display: flex; flex-direction: column; gap: var(--space-2); margin-bottom: var(--space-6); }
+.list-page__title { margin: 0; font: 600 24px/30px var(--font-sans); letter-spacing: -0.01em; } /* heading-1-sm */
+@media (min-width: 768px) { .list-page__title { font-size: 28px; line-height: 36px; } } /* heading-1 */
+.list-page__intro { margin: 0; max-width: 68ch; font-size: 15px; line-height: 22px; color: var(--ink-muted); }
+
+/*
+ * As many columns as fit at the cards' usual width (128px on phones, 184px from 768px, the
+ * --poster-width tokens' values), stretched to fill the row. Inside the grid the tokens are set to
+ * 100% so each card fills its column; MovieCard sizes itself from them.
+ */
+.list-grid {
+  --poster-width-sm: 100%; --poster-width-lg: 100%;
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(128px, 1fr));
+  gap: var(--space-5) var(--space-4); margin: 0; padding: 0; list-style: none;
+}
+@media (min-width: 768px) { .list-grid { grid-template-columns: repeat(auto-fill, minmax(184px, 1fr)); gap: var(--space-6) var(--space-5); } }
+
+.list-page__status { padding-inline: 0; }
+.list-page__section + .list-page__section { margin-top: var(--space-7); }
+.list-page__section-title { margin: 0 0 var(--space-4); font: 600 20px/28px var(--font-sans); } /* heading-2 */

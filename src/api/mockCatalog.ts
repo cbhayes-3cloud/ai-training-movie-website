@@ -1,4 +1,4 @@
-import type { CatalogApi, ListId, Title, TitleDetails } from './types';
+import type { CatalogApi, ListId, Media, Title, TitleDetails } from './types';
 
 /*
  * Sample data for building the UI before a real API is connected.
@@ -36,12 +36,16 @@ const TITLES: Title[] = [
 const byId = new Map(TITLES.map((t) => [t.id, t]));
 const pick = (ids: string[]) => ids.map((id) => byId.get(id)!).filter(Boolean);
 
+/** Each list mixes films and series; Movies and Series take only their own kind, and the homepage takes both. */
 const LISTS: Record<ListId, Title[]> = {
-  trending: pick(['harbor-lights', 'ironbark', 'salt-and-static', 'the-long-orbit', 'quiet-hours', 'paper-lanterns', 'northline', 'glass-orchard']),
-  'top-rated': [...TITLES].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)).slice(0, 8),
+  trending: pick(['harbor-lights', 'ironbark', 'salt-and-static', 'the-long-orbit', 'quiet-hours', 'paper-lanterns', 'northline', 'glass-orchard', 'undertow', 'low-tide-radio']),
+  'top-rated': [...TITLES].sort((a, b) => (b.rating ?? 0) - (a.rating ?? 0)),
   premieres: pick(['signal-fire', 'little-thunder', 'open-water', 'copperhead-lane', 'afterimage']),
   'new-this-week': pick(['signal-fire', 'copperhead-lane', 'afterimage', 'moth-season', 'open-water', 'little-thunder', 'saltgrass']),
 };
+
+const FEATURED: Record<Media, string> = { movie: 'harbor-lights', series: 'the-long-orbit', all: 'the-long-orbit' };
+const ofKind = (titles: Title[], media: Media, limit = 10) => titles.filter((t) => media === 'all' || t.kind === media).slice(0, limit);
 
 /** Resolves after a short delay so loading states are exercised during development. */
 function respond<T>(value: T, signal?: AbortSignal): Promise<T> {
@@ -62,16 +66,19 @@ function details(id: string): TitleDetails {
     ...t,
     languages: ['English'],
     directors: [],
+    creators: [],
     writers: [],
     cast: [],
     reviews: { total: 0, items: [] },
-    similar: TITLES.filter((o) => o.id !== id && o.genres.some((g) => t.genres.includes(g))).slice(0, 10),
+    similar: TITLES.filter((o) => o.id !== id && o.kind === t.kind && o.genres.some((g) => t.genres.includes(g))).slice(0, 10),
   };
 }
 
 export const mockCatalog: CatalogApi = {
-  getFeatured: (signal) => respond(byId.get('the-long-orbit')!, signal),
-  getList: (list, signal) => respond(LISTS[list], signal),
+  getFeatured: (media, signal) => respond(byId.get(FEATURED[media])!, signal),
+  getList: (media, list, signal, limit) => respond(ofKind(LISTS[list], media, limit), signal),
+  getListByKind: (list, signal, limit) =>
+    respond({ movie: ofKind(LISTS[list], 'movie', limit), series: ofKind(LISTS[list], 'series', limit) }, signal),
   getTitle: async (id, signal) => respond(details(id), signal),
-  getGenres: (signal) => respond(GENRES, signal),
+  getGenres: (_media, signal) => respond(GENRES, signal),
 };

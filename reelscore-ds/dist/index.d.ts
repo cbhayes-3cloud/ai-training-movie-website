@@ -94,6 +94,8 @@ export declare function PosterRow(props: PosterRowProps): React.ReactElement;
 export interface HeroProps {
   title: string;
   image?: string;
+  /** The point of the artwork to keep in frame when it's cropped, as a CSS object-position ("50% 20%"). Default "50% 25%". */
+  focalPoint?: string;
   ageRating?: string;
   rating?: number;
   year?: string | number;
@@ -102,6 +104,8 @@ export interface HeroProps {
   watchLabel?: string;
   addLabel?: string;
   onWatch?: () => void;
+  /** Shows the Add to list button. Off by default. */
+  showAddToList?: boolean;
   onAddToList?: () => void;
   children?: React.ReactNode;
   className?: string;
@@ -116,6 +120,8 @@ export interface FooterProps {
   /** Fills the TMDB notice: "This {productType} uses TMDB and the TMDB APIs…". */
   productType?: string;
   copyright?: string;
+  /** Rewords the design credit ("Movie reel design by Jake."). The credit always shows. */
+  designCredit?: string;
   /** Replaces the built-in TMDB logo (embedded, so it needs no network). Rarely needed. */
   tmdbLogoSrc?: string;
   label?: string;
@@ -123,12 +129,39 @@ export interface FooterProps {
 }
 export declare function Footer(props: FooterProps): React.ReactElement;
 
+export interface CastStripPerson {
+  id?: string;
+  name: string;
+  /** The character, or the job for crew. */
+  role?: string;
+  /** Portrait photo URL; without one the frame shows initials on a tone fill. */
+  photo?: string;
+  /** Makes the frame a link to this person's page. */
+  href?: string;
+  tone?: 'night' | 'red' | 'gold' | 'slate';
+}
+export interface CastStripProps {
+  people: CastStripPerson[];
+  /** The film's title. Adds a leader frame ("Reel 1 · <title> · Cast · N") at the start. */
+  title?: string;
+  /** Leader frame heading. Default "Reel 1". */
+  reel?: string;
+  /** Edge code printed on every frame. Default "RS 5219". */
+  stock?: string;
+  /** Accessible name of the list. Default "Cast of <title>", else "Cast". */
+  label?: string;
+  /** The highlight that sweeps the reel every 7 seconds. Default true; off for reduced motion regardless. */
+  shimmer?: boolean;
+  className?: string;
+}
+export declare function CastStrip(props: CastStripProps): React.ReactElement;
+
 declare global {
   interface Window {
     Reelscore: {
       Icon: typeof Icon; Button: typeof Button; IconButton: typeof IconButton; NavBar: typeof NavBar; BottomNav: typeof BottomNav;
       Tabs: typeof Tabs; GenreChips: typeof GenreChips; AgeBadge: typeof AgeBadge; RatingBadge: typeof RatingBadge;
-      RatingInput: typeof RatingInput; MovieCard: typeof MovieCard; PosterRow: typeof PosterRow; Hero: typeof Hero; Footer: typeof Footer;
+      RatingInput: typeof RatingInput; MovieCard: typeof MovieCard; PosterRow: typeof PosterRow; Hero: typeof Hero; Footer: typeof Footer; CastStrip: typeof CastStrip;
     };
   }
 }

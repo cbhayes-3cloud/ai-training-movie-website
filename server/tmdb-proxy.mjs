@@ -9,12 +9,18 @@ const TIMEOUT_MS = 10_000;
 
 // Only the read endpoints the app uses. Anything else is rejected.
 const ALLOWED_PATHS = [
+  /^\/trending\/all\/(day|week)$/,
   /^\/trending\/movie\/(day|week)$/,
   /^\/movie\/(top_rated|upcoming|now_playing|popular)$/,
   /^\/movie\/\d+$/,
   /^\/movie\/\d+\/(release_dates|videos|images|credits|recommendations|similar)$/,
   /^\/discover\/movie$/,
   /^\/genre\/movie\/list$/,
+  /^\/trending\/tv\/(day|week)$/,
+  /^\/tv\/(top_rated|on_the_air|airing_today|popular)$/,
+  /^\/tv\/\d+$/,
+  /^\/discover\/tv$/,
+  /^\/genre\/tv\/list$/,
   /^\/search\/movie$/,
   /^\/configuration$/,
 ];

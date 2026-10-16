@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"Reelscore","components":[{"name":"Icon"},{"name":"Button"},{"name":"IconButton"},{"name":"NavBar"},{"name":"BottomNav"},{"name":"Tabs"},{"name":"GenreChips"},{"name":"AgeBadge"},{"name":"RatingBadge"},{"name":"RatingInput"},{"name":"MovieCard"},{"name":"PosterRow"},{"name":"Hero"},{"name":"Footer"}]} */
+/* @ds-bundle: {"format":4,"namespace":"Reelscore","components":[{"name":"Icon"},{"name":"Button"},{"name":"IconButton"},{"name":"NavBar"},{"name":"BottomNav"},{"name":"Tabs"},{"name":"GenreChips"},{"name":"AgeBadge"},{"name":"RatingBadge"},{"name":"RatingInput"},{"name":"MovieCard"},{"name":"PosterRow"},{"name":"Hero"},{"name":"Footer"},{"name":"CastStrip"}]} */
 (function () {
   var React = window.React;
   var h = React.createElement;
@@ -280,7 +280,7 @@
     if (props.length) meta.push(h('span', { key: 'l' }, props.length));
     return h('section', { className: cx('rs-hero', props.className), 'aria-label': props.title },
       h('div', { className: 'rs-hero__art', 'aria-hidden': 'true' },
-        props.image ? h('img', { src: props.image, alt: '' }) : null),
+        props.image ? h('img', { src: props.image, alt: '', style: props.focalPoint ? { objectPosition: props.focalPoint } : undefined }) : null),
       h('div', { className: 'rs-hero__body' },
         props.ageRating ? h(AgeBadge, { rating: props.ageRating }) : null,
         meta.length ? h('div', { className: 'rs-hero__meta' }, meta) : null,
@@ -288,7 +288,7 @@
         props.synopsis ? h('p', { className: 'rs-hero__synopsis' }, props.synopsis) : null,
         h('div', { className: 'rs-hero__actions' },
           h(Button, { variant: 'primary', icon: 'play', onClick: props.onWatch }, props.watchLabel || 'Watch trailer'),
-          h(Button, { variant: 'secondary', icon: 'plus', onClick: props.onAddToList }, props.addLabel || 'Add to list'))
+          props.showAddToList ? h(Button, { variant: 'secondary', icon: 'plus', onClick: props.onAddToList }, props.addLabel || 'Add to list') : null)
       ),
       props.children ? h('div', { className: 'rs-hero__foot' }, props.children) : null
     );
@@ -316,14 +316,64 @@
             h('img', { src: props.tmdbLogoSrc || TMDB_LOGO, alt: 'TMDB', width: 108, height: 14 })),
           h('p', { className: 'rs-footer__notice' }, 'This ' + product + ' uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB.')
         ),
-        props.copyright ? h('p', { className: 'rs-footer__legal' }, props.copyright) : null
+        props.copyright ? h('p', { className: 'rs-footer__legal' }, props.copyright) : null,
+        h('p', { className: 'rs-footer__legal rs-footer__credit' }, props.designCredit || 'Movie reel design by Jake.')
       )
     );
+  }
+
+  /* A film strip of cast members: sprocketed frames with the name and role printed below the reel. */
+  var STRIP_TONES = ['night', 'red', 'slate', 'gold'];
+  function initialsOf(name) {
+    var parts = String(name || '').trim().split(/\s+/);
+    return ((parts[0] || '').charAt(0) + (parts.length > 1 ? parts[parts.length - 1].charAt(0) : '')).toUpperCase();
+  }
+  function Sprockets(props) {
+    var holes = [];
+    for (var i = 0; i < props.count; i++) holes.push(h('span', { key: i }));
+    return h('div', { className: cx('rs-strip__holes', props.bottom && 'rs-strip__holes--bottom'), 'aria-hidden': 'true' }, holes);
+  }
+
+  function CastStrip(props) {
+    var people = props.people || [];
+    var items = [];
+    if (props.title) {
+      items.push(h('li', { key: 'leader', className: 'rs-strip__item rs-strip__item--leader', 'aria-hidden': 'true' },
+        h('div', { className: 'rs-strip__film' },
+          h(Sprockets, { count: 4 }),
+          h('div', { className: 'rs-strip__leader' },
+            h('span', { className: 'rs-strip__reel' }, props.reel || 'Reel 1'),
+            h('span', { className: 'rs-strip__meta' }, props.title),
+            h('span', { className: 'rs-strip__meta' }, 'Cast · ' + people.length)),
+          h(Sprockets, { count: 4, bottom: true }))));
+    }
+    people.forEach(function (p, i) {
+      var n = i + 1;
+      var tone = p.tone || STRIP_TONES[i % STRIP_TONES.length];
+      var picture = p.photo ? h('img', { src: p.photo, alt: '', loading: 'lazy' }) : h('span', { 'aria-hidden': 'true' }, initialsOf(p.name));
+      var frameClass = cx('rs-strip__frame', 'rs-strip__frame--' + tone);
+      var frame = p.href
+        ? h('a', { className: frameClass, href: p.href, 'aria-label': p.role ? p.name + ' as ' + p.role : p.name }, picture)
+        : h('div', { className: frameClass, 'aria-hidden': 'true' }, picture);
+      items.push(h('li', { key: p.id || p.name + '-' + i, className: 'rs-strip__item' },
+        h('div', { className: 'rs-strip__film' },
+          h(Sprockets, { count: 6 }),
+          h('div', { className: 'rs-strip__code', 'aria-hidden': 'true' },
+            h('span', null, '▸ ' + (n < 10 ? '0' : '') + n + 'A'),
+            h('span', null, props.stock || 'RS 5219')),
+          frame,
+          h(Sprockets, { count: 6, bottom: true })),
+        h('div', { className: 'rs-strip__caption' },
+          h('span', { className: 'rs-strip__name', title: p.name }, p.name),
+          p.role ? h('span', { className: 'rs-strip__role', title: p.role }, p.role) : null)));
+    });
+    return h('div', { className: cx('rs-strip', props.shimmer === false && 'rs-strip--still', props.className) },
+      h('ul', { className: 'rs-strip__list', 'aria-label': props.label || (props.title ? 'Cast of ' + props.title : 'Cast') }, items));
   }
 
   window.Reelscore = Object.assign(window.Reelscore || {}, {
     Icon: Icon, Button: Button, IconButton: IconButton, NavBar: NavBar, BottomNav: BottomNav,
     Tabs: Tabs, GenreChips: GenreChips, AgeBadge: AgeBadge, RatingBadge: RatingBadge,
-    RatingInput: RatingInput, MovieCard: MovieCard, PosterRow: PosterRow, Hero: Hero, Footer: Footer
+    RatingInput: RatingInput, MovieCard: MovieCard, PosterRow: PosterRow, Hero: Hero, Footer: Footer, CastStrip: CastStrip
   });
 })();

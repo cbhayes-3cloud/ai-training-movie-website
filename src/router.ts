@@ -10,6 +10,9 @@ import { useEffect, useState } from 'react';
 /** The title page for a `Title.id`. */
 export const titleHref = (id: string) => `/title/${encodeURIComponent(id)}`;
 
+/** A full list page, such as `/lists/top-rated?media=series`. */
+export const listHref = (list: string, media: string) => `/lists/${list}?media=${encodeURIComponent(media)}`;
+
 export function navigate(href: string) {
   history.pushState(null, '', href);
   window.dispatchEvent(new PopStateEvent('popstate'));
@@ -27,12 +30,14 @@ function isAppLink(e: MouseEvent): HTMLAnchorElement | undefined {
   return a;
 }
 
-/** The current pathname, updated on link clicks and back/forward. */
-export function usePath() {
-  const [path, setPath] = useState(() => location.pathname);
+const current = () => location.pathname + location.search;
+
+/** The current path and query string, updated on link clicks and back/forward. */
+export function useLocation() {
+  const [url, setUrl] = useState(current);
 
   useEffect(() => {
-    const onPop = () => setPath(location.pathname);
+    const onPop = () => setUrl(current());
     const onClick = (e: MouseEvent) => {
       const a = isAppLink(e);
       if (!a) return;
@@ -48,5 +53,9 @@ export function usePath() {
     };
   }, []);
 
-  return path;
+  const at = url.indexOf('?');
+  return {
+    path: at < 0 ? url : url.slice(0, at),
+    query: new URLSearchParams(at < 0 ? '' : url.slice(at)),
+  };
 }
