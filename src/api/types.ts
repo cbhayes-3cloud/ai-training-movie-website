@@ -1,6 +1,6 @@
 /** A film or series as the app uses it, independent of which API supplied it. */
 export interface Title {
-  /** Prefixed with the media type ("movie-550") so movie and TV ids can't collide. */
+  /** Prefixed with the media type ("movie-550", "tv-1399") so movie and TV ids can't collide. */
   id: string;
   title: string;
   kind: 'movie' | 'series';
@@ -45,11 +45,13 @@ export interface Review {
 
 /** Everything the title page shows. */
 export interface TitleDetails extends Title {
-  /** ISO date of the US theatrical release, else the first release. */
+  /** Films: ISO date of the US theatrical release, else the first release. Series: the first air date. */
   releaseDate?: string;
   /** Spoken languages, in English ("English", "Irish"). */
   languages: string[];
   directors: Person[];
+  /** Series only: who created the show. */
+  creators: Person[];
   writers: Person[];
   /** Billing order. */
   cast: Person[];
@@ -61,7 +63,10 @@ export interface TitleDetails extends Title {
   similar: Title[];
 }
 
-/** The curated lists the homepage shows. */
+/** Which side of the catalogue a browse page shows: films, series, or both mixed (the homepage). */
+export type Media = Title['kind'] | 'all';
+
+/** The curated lists a browse page shows. */
 export type ListId = 'trending' | 'top-rated' | 'premieres' | 'new-this-week';
 
 /**
@@ -69,10 +74,16 @@ export type ListId = 'trending' | 'top-rated' | 'premieres' | 'new-this-week';
  * provider and switch the export in `src/api/index.ts`.
  */
 export interface CatalogApi {
-  getFeatured(signal?: AbortSignal): Promise<Title>;
-  getList(list: ListId, signal?: AbortSignal): Promise<Title[]>;
+  getFeatured(media: Media, signal?: AbortSignal): Promise<Title>;
+  /**
+   * The first `limit` titles of a list (default 20, a row's worth); the list pages ask for 100.
+   * With media 'all', only trending exists as one list (TMDB's own mix); use `getListByKind` for the others.
+   */
+  getList(media: Media, list: ListId, signal?: AbortSignal, limit?: number): Promise<Title[]>;
+  /** A list as TMDB gives it, films and series separately, each in TMDB's order. For the mixed homepage. */
+  getListByKind(list: ListId, signal?: AbortSignal, limit?: number): Promise<Record<Title['kind'], Title[]>>;
   /** One title by its `Title.id`, for the title page. */
   getTitle(id: string, signal?: AbortSignal): Promise<TitleDetails>;
   /** Genre labels to offer as filters, in display order. */
-  getGenres(signal?: AbortSignal): Promise<string[]>;
+  getGenres(media: Media, signal?: AbortSignal): Promise<string[]>;
 }

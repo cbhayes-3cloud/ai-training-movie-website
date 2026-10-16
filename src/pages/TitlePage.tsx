@@ -1,13 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Button, Hero, PosterRow, RatingBadge, RatingInput, Tabs } from 'reelscore';
+import { CastStrip, Hero, PosterRow, RatingBadge, RatingInput, Tabs } from 'reelscore';
 import { catalog, type Person, type Review, type TitleDetails } from '../api';
+import { focalPointFor } from '../data/focalPoints';
 import { TitleCard } from '../components/TitleRow';
 import { useAsync } from '../hooks/useAsync';
 import type { LibraryApi } from '../hooks/useLibrary';
 import { formatDate, initials, shorten } from '../text';
 
-/** Cast circles without a photo cycle through these fills, as in the design. */
-const CAST_TONES = ['var(--backdrop)', 'var(--brand-press)', 'var(--surface-400)', 'var(--gold-deep)'];
 const REVIEW_LENGTH = 420;
 
 interface TitlePageProps {
@@ -52,7 +51,6 @@ export function TitlePage({ id, library }: TitlePageProps) {
 
 function TitleView({ t, library }: { t: TitleDetails; library: LibraryApi }) {
   const [section, setSection] = useState('overview');
-  const saved = library.inMyList(t.id);
 
   // Tabs jump to sections; only offer the ones this title has.
   const tabs = [
@@ -74,6 +72,7 @@ function TitleView({ t, library }: { t: TitleDetails; library: LibraryApi }) {
       <Hero
         title={t.title}
         image={t.backdropUrl}
+        focalPoint={focalPointFor(t.id)}
         ageRating={t.ageRating}
         rating={t.rating}
         year={t.year}
@@ -81,8 +80,6 @@ function TitleView({ t, library }: { t: TitleDetails; library: LibraryApi }) {
         synopsis={shorten(t.synopsis, 160)}
         watchLabel="Watch trailer"
         onWatch={t.trailerUrl ? () => window.open(t.trailerUrl, '_blank', 'noopener') : undefined}
-        addLabel={saved ? 'In my list' : 'Add to list'}
-        onAddToList={() => library.toggleMyList(t.id)}
       >
         <Tabs
           label="Title sections"
@@ -96,7 +93,7 @@ function TitleView({ t, library }: { t: TitleDetails; library: LibraryApi }) {
       <div className="title-body">
         <div className="title-main">
           <Overview t={t} />
-          {t.cast.length > 0 && <Cast cast={t.cast} />}
+          {t.cast.length > 0 && <Cast title={t.title} cast={t.cast} />}
           <Reviews reviews={t.reviews} />
         </div>
 
@@ -110,10 +107,6 @@ function TitleView({ t, library }: { t: TitleDetails; library: LibraryApi }) {
               value={library.ratingOf(t.id)}
               onChange={(score) => library.rate(t.id, score)}
             />
-            {/* No review API yet; see the README. */}
-            <Button variant="ghost" fullWidth disabled>
-              Write a review
-            </Button>
           </section>
 
           <CommunityScore t={t} />
@@ -153,8 +146,16 @@ function Overview({ t }: { t: TitleDetails }) {
         </ul>
       )}
       {t.synopsis && <p className="title-overview">{t.synopsis}</p>}
-      {(t.directors.length > 0 || t.writers.length > 0 || starring.length > 0) && (
+      {(t.creators.length > 0 || t.directors.length > 0 || t.writers.length > 0 || starring.length > 0) && (
         <dl className="title-credits">
+          {t.creators.length > 0 && (
+            <>
+              <dt>Created by</dt>
+              <dd>
+                <Names people={t.creators} />
+              </dd>
+            </>
+          )}
           {t.directors.length > 0 && (
             <>
               <dt>{t.directors.length > 1 ? 'Directors' : 'Director'}</dt>
@@ -185,27 +186,17 @@ function Overview({ t }: { t: TitleDetails }) {
   );
 }
 
-function Cast({ cast }: { cast: Person[] }) {
+/* No person pages yet, so frames aren't links; pass `href` once they exist. */
+function Cast({ title, cast }: { title: string; cast: Person[] }) {
   return (
     <section id="cast" className="title-section" aria-labelledby="cast-title">
       <h2 id="cast-title" className="title-section__title">
         Cast
       </h2>
-      <ul className="title-cast">
-        {cast.map((p, i) => (
-          <li key={p.id + i}>
-            {p.photoUrl ? (
-              <img className="title-cast__photo" src={p.photoUrl} alt="" loading="lazy" />
-            ) : (
-              <span className="title-cast__photo" aria-hidden="true" style={{ background: CAST_TONES[i % CAST_TONES.length] }}>
-                {initials(p.name)}
-              </span>
-            )}
-            <span className="title-cast__name">{p.name}</span>
-            {p.role && <span className="title-cast__role">{p.role}</span>}
-          </li>
-        ))}
-      </ul>
+      <CastStrip
+        title={title}
+        people={cast.map((p, i) => ({ id: `${p.id}-${i}`, name: p.name, role: p.role, photo: p.photoUrl }))}
+      />
     </section>
   );
 }
@@ -283,7 +274,7 @@ function Details({ t }: { t: TitleDetails }) {
       <dl className="title-details">
         {t.releaseDate && (
           <>
-            <dt>Released</dt>
+            <dt>{t.kind === 'series' ? 'First aired' : 'Released'}</dt>
             <dd>{formatDate(t.releaseDate)}</dd>
           </>
         )}

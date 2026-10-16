@@ -33,7 +33,7 @@ Set `VITE_USE_MOCK_DATA=true` in `.env` to use the built-in sample data instead 
 The design came first and the app was built from it, so the app has very little styling of its own.
 
 1. **Design in Claude.** The Reelscore look (the color, type, spacing and the homepage and title page concepts) was designed in Claude Design artifacts on claude.ai. That's where the "Spotlight" homepage and "Detail" title page designs come from.
-2. **A design system from the design.** The tokens and 14 React components (NavBar, Hero, Tabs, GenreChips, PosterRow, MovieCard, RatingBadge, RatingInput, AgeBadge, Button, IconButton, Icon, BottomNav, Footer) live in a *Design System* artifact. They were downloaded into `reelscore-ds/project/`.
+2. **A design system from the design.** The tokens and 15 React components (NavBar, Hero, Tabs, GenreChips, PosterRow, MovieCard, CastStrip, RatingBadge, RatingInput, AgeBadge, Button, IconButton, Icon, BottomNav, Footer) live in a *Design System* artifact. They were downloaded into `reelscore-ds/project/`.
 3. **A local package.** `reelscore-ds/` packages those files as `reelscore`, which the app depends on with `"reelscore": "file:./reelscore-ds"`. Its `dist/` is assembled from the artifact files (see `reelscore-ds/.design-sync/NOTES.md` for exactly how).
 4. **design-sync.** The package is synced back to a Claude Design project with design-sync, so designers and Claude can mock up new screens with the same real components the app uses. The sync setup is in `reelscore-ds/.design-sync/`:
    - `config.json`: the target project, package name, CSS entry and per-component settings
@@ -60,8 +60,9 @@ src/
   App.tsx          shell (NavBar, Footer, BottomNav) and routes
   router.ts        a minimal client-side router for plain <a href="/..."> links
   pages/
-    HomePage.tsx   /            featured Hero, browse Tabs, GenreChips, poster rows
-    TitlePage.tsx  /title/:id   the "Detail" design, e.g. /title/movie-550
+    BrowsePage.tsx /, /movies, /series   featured Hero, browse Tabs, GenreChips, poster rows
+    TitlePage.tsx  /title/:id            the "Detail" design, e.g. /title/movie-550 or /title/tv-1396
+    ListPage.tsx   /lists/:list?media=   a page title and up to 100 titles in a grid (trending, top-rated, new-this-week, premieres)
   components/      app-level pieces built from design system components
   api/             the data layer: CatalogApi interface, TMDB and sample implementations
   hooks/
@@ -73,10 +74,12 @@ server/
 reelscore-ds/      the Reelscore design system package and its design-sync setup
 ```
 
-- **Home (`/`)** follows the "Spotlight" design: a featured Hero with browse Tabs, GenreChips and three poster rows. Every poster links to its title page.
-- **Title page (`/title/:id`)** follows the "Detail" design: Hero with section Tabs, overview and credits, cast, reviews, your rating, community score, details and "More like this".
+- **Home (`/`), Movies (`/movies`) and Series (`/series`)** follow the "Spotlight" design: a featured Hero with browse Tabs (Trending now, Top rated, New this week, Premieres), GenreChips and poster rows: the tab's list, then Top rated, New this week and Premieres (a fixed row is skipped while the tab shows the same list). Movies shows only films, Series only TV series, and Home mixes the two. TMDB only mixes films and series for trending, so on Home the other lists show as a films row and a series row, each in TMDB's order, and a mixed list page (`?media=all`) splits them into Films and Series sections. Every poster links to its title page (`/title/movie-…` or `/title/tv-…`), and series cards show their season count when it's known.
+- **List pages (`/lists/:list?media=all|movie|series`)**, such as `/lists/top-rated?media=series`: the page title and the whole list, up to 100 titles, in a grid with no hero and no scrolling rows. The list comes from the path and the media from the query (both films and series if it's left out). The "See all" links on Home, Movies and Series open them. TMDB serves 20 titles a page, so a list page fetches six pages of each kind in parallel (one spare, in case the ranking shifts while they load).
+- **Title page (`/title/:id`)** works for films and series and follows the "Detail" design: Hero with section Tabs, overview and credits, cast, reviews, your rating, community score, details and "More like this".
 - **Data:** every screen reads from `catalog` in `src/api/index.ts`, which implements the `CatalogApi` interface in `types.ts`. It's the TMDB implementation, or the sample data when `VITE_USE_MOCK_DATA=true`, so the screens don't know or care which.
 - **Your library** (likes, watched, my list and ratings) is saved in the browser for now. There are no accounts yet.
+- **Hero crops:** hero art crops from `50% 25%` by default, which keeps faces on wide screens. If a backdrop still cuts someone off, add its title id and a CSS `object-position` to `src/data/focalPoints.ts`, for example `'movie-1561726': '50% 0%'` keeps Masterplan's top edge.
 
 ## Movie data (TMDB)
 
@@ -92,16 +95,21 @@ Only `VITE_*` variables reach the browser. The `TMDB_*` ones stay on the server.
 
 ### What comes from where
 
-`src/api/tmdbCatalog.ts` maps TMDB responses to our `Title` type. Movies only for now.
+`src/api/tmdbCatalog.ts` maps TMDB's film and TV responses to our `Title` type. Ids carry the type, so `movie-550` is a film and `tv-1396` a series.
 
-| On screen | TMDB endpoint |
-| --- | --- |
-| Trending now | `/trending/movie/week` |
-| Top rated | `/movie/top_rated` |
-| Premieres | `/movie/upcoming` |
-| New this week | `/discover/movie` for the last 7 days |
-| Home hero | today's top trending film, plus one details call for runtime, US certification and trailer |
-| Title page | one `/movie/{id}` call with `append_to_response=release_dates,videos,credits,reviews,recommendations,similar,watch/providers` |
+| On screen | Films (Movies) | Series | Home (both) |
+| --- | --- | --- | --- |
+| Trending now | `/trending/movie/week` | `/trending/tv/week` | `/trending/all/week` (people are dropped) |
+| Top rated | `/movie/top_rated` | `/tv/top_rated` | separate films and series rows, each in TMDB's order |
+| Premieres | `/discover/movie`, first-ever release in the next 30 days (so re-releases don't count) | `/discover/tv`, first airing in the next 30 days | separate films and series rows, each in TMDB's order |
+| New this week | `/discover/movie` for the last 7 days | `/discover/tv`, first aired in the last 7 days | separate films and series rows, each in TMDB's order |
+| Hero | today's top trending film, plus one details call for runtime, US certification and trailer | today's top trending series, plus one details call for seasons, US TV rating and trailer | today's top trending film or series from `/trending/all/day`, plus the matching details call |
+| Genre chips | `/genre/movie/list` | `/genre/tv/list` (TMDB's TV genres differ, such as "Action & adventure") | both, merged (see below) |
+| Title page | one `/movie/{id}` call with `append_to_response=release_dates,videos,credits,reviews,recommendations,similar,watch/providers` | one `/tv/{id}` call with `append_to_response=content_ratings,videos,aggregate_credits,reviews,recommendations,similar,watch/providers` | |
+
+Home's genre chips use TMDB's broader TV genres so one chip matches both kinds: "Action & adventure" covers the film genres Action and Adventure, and "Sci-fi & fantasy" covers Science Fiction and Fantasy. Horror and Mystery come from the film list (Mystery is also a TV genre). The TMDB adapter labels each title's genres for the page showing it, so a film is "Sci-fi" on Movies and "Sci-fi & fantasy" on Home.
+
+The series "new" lists leave out news and talk shows, which would otherwise fill them with daily episodes. A series title page shows "Created by" instead of a director and writers, and its cast covers every season.
 
 Scores from fewer than 10 votes are hidden as noise.
 
@@ -109,7 +117,7 @@ Scores from fewer than 10 votes are hidden as noise.
 
 - Rating distribution bars: TMDB only gives the average and count, so they're left out.
 - "Helpful" counts on reviews: not in the API, so they're left out.
-- Your rating is saved in the browser (`useLibrary`), not to an account. "Write a review" is disabled.
+- Your rating is saved in the browser (`useLibrary`), not to an account. The title page has no "Write a review" button, and no hero shows "Add to list" (Hero's `showAddToList` is off by default).
 - Person pages, "Full cast & crew" and "See all reviews" have the data (`/person/{id}`, `/movie/{id}/credits`, `/movie/{id}/reviews`) but no pages yet, so names are plain text and those links are left out.
 
 ### Attribution

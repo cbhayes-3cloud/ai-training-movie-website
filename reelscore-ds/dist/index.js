@@ -15,3 +15,4 @@ export const MovieCard = R.MovieCard;
 export const PosterRow = R.PosterRow;
 export const Hero = R.Hero;
 export const Footer = R.Footer;
+export const CastStrip = R.CastStrip;

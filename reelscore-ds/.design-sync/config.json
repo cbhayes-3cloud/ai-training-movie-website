@@ -29,6 +29,9 @@
     },
     "Button": {
       "cardMode": "column"
+    },
+    "CastStrip": {
+      "cardMode": "column"
     }
   },
   "dtsPropsFor": {
