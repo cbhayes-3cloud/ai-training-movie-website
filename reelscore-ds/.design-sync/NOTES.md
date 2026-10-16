@@ -18,10 +18,12 @@
 - `dtsPropsFor` Button/IconButton: the extractor drops inherited `ButtonHTMLAttributes`, so `onClick`/`disabled`/`type` were hand-added.
 - Render check needs Playwright **1.61.1**, which matches the cached chromium-1228 in `~/Library/Caches/ms-playwright`. It's installed in `.ds-sync/`.
 
-- **Hero `showAddToList` (added 2026-10-16):** Add to list is off by default; Hero shows it only when `showAddToList` is true. When Watch is alone, `.rs-hero__actions > :only-child` spans the row. Changed here in `project/components/` and `dist/` only, not yet in the source Design System artifact.
-- **Hero `focalPoint` (added 2026-10-16):** optional prop, applied as the image's inline `object-position`; the CSS default is `50% 25%` (was centred) so wide crops keep faces. Changed here in `project/components/` and `dist/` only, not yet in the source Design System artifact.
-- **Footer design credit (added 2026-10-16):** Footer always ends with "Movie reel design by Jake." (the movie reel / film-strip cast design; see CastStrip). `designCredit` rewords it. Changed here in `project/components/` and `dist/` only, not yet in the source Design System artifact.
-- **Tabs left-aligned (2026-10-16):** from 768px the tab list was `justify-content: space-between`; it's now `flex-start`, so tabs sit left on the gutter at every width. Changed here in `project/components/` and `dist/` only, not yet in the source Design System artifact.
+- **Hero `showAddToList` (added 2026-10-16):** Add to list is off by default; Hero shows it only when `showAddToList` is true. When Watch is alone, `.rs-hero__actions > :only-child` spans the row. Published to the source Design System artifact (version 11, 2026-10-16).
+- **Hero `focalPoint` (added 2026-10-16):** optional prop, applied as the image's inline `object-position`; the CSS default is `50% 25%` (was centred) so wide crops keep faces. Published to the source artifact (version 11, 2026-10-16).
+- **Footer design credit (added 2026-10-16):** Footer always ends with "Movie reel design by Jake." (the movie reel / film-strip cast design; see CastStrip). `designCredit` rewords it. Published to the source artifact (version 11, 2026-10-16).
+- **Tabs left-aligned (2026-10-16):** from 768px the tab list was `justify-content: space-between`; it's now `flex-start`, so tabs sit left on the gutter at every width. Published to the source artifact (version 11, 2026-10-16).
+- **Sync status (2026-10-16):** the source Design System artifact matches `project/` here: `bundle.js`, `bundle.css`, `index.d.ts`, the Hero/Tabs/Footer READMEs and `Footer/preview.html`. Its index `lastChange` was set by the re-sync.
+- **Two other Design sources, not synced from here:** the Design artifact (`C8CXfJ3Tpbsnr7xi77fX3t`) is the source of `tokens.css` only. Its `project/ds/reelscore/components/bundle.js` is an Oct 14 copy and predates Hero, Tabs, Footer and CastStrip changes, so don't use its components. The Claude Design project `5d8d51f1-6acc-48e6-8905-255cfaf52391` (`config.json` `projectId`) is a separate project that `/design-sync` targets.
 
 ## Known render warns
 - (none outstanding after authoring)
