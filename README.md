@@ -62,6 +62,7 @@ src/
   pages/
     BrowsePage.tsx /, /movies, /series   featured Hero, browse Tabs, GenreChips, poster rows
     TitlePage.tsx  /title/:id            the "Detail" design, e.g. /title/movie-550 or /title/tv-1396
+    SearchPage.tsx /search?q=&type=      results by tab: All, Films, Series, People
     ListPage.tsx   /lists/:list?media=   a page title and up to 100 titles in a grid (trending, top-rated, new-this-week, premieres)
     PersonPage.tsx /person/:id           an actor's or crew member's page, e.g. /person/287
   components/      app-level pieces built from design system components
@@ -69,6 +70,7 @@ src/
   hooks/
     useAsync.ts    loading and error state for API calls
     useLibrary.ts  your liked, watched and "my list" titles, and your ratings
+    useSearch.ts   search-as-you-type: debounced, cancelled when the text changes
 server/
   tmdb-proxy.mjs   the TMDB proxy, used by both the dev and production servers
   index.mjs        production server: static files plus the proxy
@@ -79,6 +81,8 @@ reelscore-ds/      the Reelscore design system package and its design-sync setup
 - **List pages (`/lists/:list?media=all|movie|series`)**, such as `/lists/top-rated?media=series`: the page title and the whole list, up to 100 titles, in a grid with no hero and no scrolling rows. The list comes from the path and the media from the query (both films and series if it's left out). The "See all" links on Home, Movies and Series open them. TMDB serves 20 titles a page, so a list page fetches six pages of each kind in parallel (one spare, in case the ranking shifts while they load).
 - **Title page (`/title/:id`)** works for films and series and follows the "Detail" design: Hero with section Tabs, overview and credits, cast, reviews, your rating, community score, details and "More like this". Every name in the credits and every cast frame links to that person's page.
 - **Person page (`/person/:id`)** follows the "Person page" design: a profile header (portrait, name, birth and death, credit counts) over the backdrop of their best-known title, section Tabs, a Known for grid of their 12 most-voted titles, the biography (folded when it's long), a filmography with a tab per department (their main one first, 20 credits shown, then "Show all"), and details, highest rated and links to IMDb, Instagram and their site. Known for leaves out talk shows and appearances as themselves, and puts cameos (billed below 15th, or under 3 episodes of a series) after bigger roles. "First film" counts films only, because TMDB dates a series credit by the show's first episode. Every title links to its title page.
+- **Search** lives in the NavBar on every page. After 3 characters and a 250 ms pause it searches TMDB's films, series and people in parallel (`/search/movie`, `/search/tv`, `/search/person`), and each further keystroke searches again, cancelling the one before. Results show in a panel joined under the field (`src/components/SearchPanel.tsx`, `src/hooks/useSearch.ts`): films and series interleaved by popularity, then people. A person links to their person page.
+- **Search results page (`/search?q=…&type=all|films|series|people`)** opens when you press Enter in the search field. It says how many films, series and people match, then tabs: All shows six films, six series and a strip of people, ordered by their best match (people first when a name is exactly what you searched for); Films, Series and People list every match, 20 at a time with "Show more". With no matches it suggests what's trending. The design mockup is `design/search-results.html` (open it from the dev server).
 - **Data:** every screen reads from `catalog` in `src/api/index.ts`, which implements the `CatalogApi` interface in `types.ts`. It's the TMDB implementation, or the sample data when `VITE_USE_MOCK_DATA=true`, so the screens don't know or care which.
 - **Your library** (likes, watched, my list and ratings) is saved in the browser for now. There are no accounts yet.
 - **Hero crops:** hero art crops from `50% 25%` by default, which keeps faces on wide screens. If a backdrop still cuts someone off, add its title id and a CSS `object-position` to `src/data/focalPoints.ts`, for example `'movie-1561726': '50% 0%'` keeps Masterplan's top edge.

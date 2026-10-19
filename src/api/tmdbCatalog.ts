@@ -1,4 +1,17 @@
-import type { CatalogApi, Credit, CreditGroup, ListId, Media, Person, Review, Title, TitleDetails } from './types';
+import type {
+  CatalogApi,
+  Credit,
+  CreditGroup,
+  ListId,
+  Media,
+  Person,
+  PersonMatch,
+  Review,
+  SearchPage,
+  SearchResults,
+  Title,
+  TitleDetails,
+} from './types';
 
 /*
  * TMDB adapter for films and series. Requests go through our proxy at /api/tmdb,
@@ -86,9 +99,19 @@ interface TmdbItem {
   poster_path?: string | null;
   backdrop_path?: string | null;
   genre_ids?: number[];
-  /** Only on the mixed `/trending/all` lists: "movie", "tv" or "person". */
+  /** Only on the mixed `/trending/all` lists and a person's `known_for`: "movie", "tv" or "person". */
   media_type?: string;
+  popularity?: number;
   adult?: boolean;
+}
+
+interface TmdbPerson {
+  id: number;
+  name: string;
+  known_for_department?: string;
+  profile_path?: string | null;
+  popularity?: number;
+  known_for?: TmdbItem[];
 }
 
 /** A title in a person's `combined_credits`, tagged with `media_type`. */
@@ -164,6 +187,13 @@ interface TmdbProvider {
 
 interface Page<T> {
   results: T[];
+}
+
+/** Search responses also say how many matches there are in all. */
+interface SearchResponse<T> extends Page<T> {
+  page: number;
+  total_pages: number;
+  total_results: number;
 }
 
 async function get<T>(path: string, params: Record<string, string> = {}, signal?: AbortSignal): Promise<T> {
@@ -460,11 +490,84 @@ function watchOf(d: TmdbDetails): TitleDetails['watch'] {
 
 const detailGenres = (d: TmdbDetails, media: Media) => unique((d.genres ?? []).map((g) => genreLabel(media, g.name)));
 
+const SEARCH_TITLES = 8;
+const SEARCH_PEOPLE = 3;
+/* TMDB's people search matches loosely; people this obscure are rarely who was meant. */
+const MIN_PERSON_POPULARITY = 1;
+
 /** A title with a small poster, for search results and filmography rows. */
 const searchTitle = (m: TmdbItem, names: Map<number, string>, kind: Kind): Title => ({
   ...toTitle(m, namesFor(m.genre_ids, names, kind), kind),
   posterUrl: image(THUMB_SIZE, m.poster_path),
 });
+
+function toPersonMatch(p: TmdbPerson, names: Record<Kind, Map<number, string>>, photoSize: string): PersonMatch {
+  return {
+    id: `person-${p.id}`,
+    name: p.name,
+    department: p.known_for_department || undefined,
+    photoUrl: image(photoSize, p.profile_path),
+    knownFor: (p.known_for ?? []).flatMap((m) => {
+      const kind = KIND_OF[m.media_type ?? ''];
+      return kind ? [searchTitle(m, names[kind], kind)] : [];
+    }),
+  };
+}
+
+const searchParams = (query: string, page = 1) => ({ query, include_adult: 'false', page: String(page) });
+
+function toSearchPage<T, U>(r: SearchResponse<T>, map: (item: T) => U, popularity: (item: T) => number | undefined): SearchPage<U> {
+  return {
+    items: r.results.map(map),
+    total: r.total_results,
+    page: r.page,
+    totalPages: r.total_pages,
+    topPopularity: r.results[0] ? popularity(r.results[0]) : undefined,
+  };
+}
+
+async function searchTitles(kind: Kind, query: string, page: number, signal?: AbortSignal): Promise<SearchPage<Title>> {
+  const [r, names] = await Promise.all([
+    get<SearchResponse<TmdbItem>>(`/search/${PATH[kind]}`, searchParams(query, page), signal),
+    genres(kind),
+  ]);
+  return toSearchPage(r, (m) => toTitle(m, namesFor(m.genre_ids, names, kind), kind), (m) => m.popularity);
+}
+
+async function searchPeople(query: string, page: number, signal?: AbortSignal): Promise<SearchPage<PersonMatch>> {
+  const [r, movie, series] = await Promise.all([
+    get<SearchResponse<TmdbPerson>>('/search/person', searchParams(query, page), signal),
+    genres('movie'),
+    genres('series'),
+  ]);
+  return toSearchPage(r, (p) => toPersonMatch(p, { movie, series }, PROFILE_SIZE), (p) => p.popularity);
+}
+
+async function search(query: string, signal?: AbortSignal): Promise<SearchResults> {
+  // Page 1 of the same requests the search page makes, so the proxy's cache serves both.
+  const params = searchParams(query);
+  const [movies, shows, people, movieNames, tvNames] = await Promise.all([
+    get<Page<TmdbItem>>('/search/movie', params, signal),
+    get<Page<TmdbItem>>('/search/tv', params, signal),
+    get<Page<TmdbPerson>>('/search/person', params, signal),
+    genres('movie'),
+    genres('series'),
+  ]);
+  // Each search is in TMDB's relevance order; popularity interleaves the two kinds.
+  const titles = [
+    ...movies.results.map((m) => ({ m, kind: 'movie' as Kind })),
+    ...shows.results.map((m) => ({ m, kind: 'series' as Kind })),
+  ]
+    .sort((a, b) => (b.m.popularity ?? 0) - (a.m.popularity ?? 0))
+    .slice(0, SEARCH_TITLES)
+    .map(({ m, kind }) => searchTitle(m, kind === 'movie' ? movieNames : tvNames, kind));
+
+  const found: PersonMatch[] = people.results
+    .filter((p) => (p.popularity ?? 0) >= MIN_PERSON_POPULARITY)
+    .slice(0, SEARCH_PEOPLE)
+    .map((p) => toPersonMatch(p, { movie: movieNames, series: tvNames }, THUMB_SIZE));
+  return { titles, people: found };
+}
 
 const KNOWN_FOR_SHOWN = 12;
 /** Talk and news shows: a guest spot on one has huge vote counts but isn't what anyone is known for. */
@@ -643,4 +746,8 @@ export const tmdbCatalog: CatalogApi = {
     const available = new Set(maps.flatMap((m) => [...m.values()]).map((name) => genreLabel(media, name)));
     return unique(Object.values(GENRE_CHIPS[media])).filter((label) => available.has(label));
   },
+
+  search,
+  searchTitles,
+  searchPeople,
 };

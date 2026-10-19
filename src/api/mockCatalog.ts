@@ -85,4 +85,15 @@ export const mockCatalog: CatalogApi = {
   getPerson: async (id) => {
     throw new Error(`The sample data has no people, so there's no person with the id "${id}".`);
   },
+  searchTitles: (kind, query, page, signal) => {
+    const q = query.trim().toLowerCase();
+    const items = page === 1 ? TITLES.filter((t) => t.kind === kind && t.title.toLowerCase().includes(q)) : [];
+    return respond({ items, total: items.length, page, totalPages: 1 }, signal);
+  },
+  searchPeople: (_query, page, signal) => respond({ items: [], total: 0, page, totalPages: 1 }, signal),
+  // The sample titles have no people, so search finds titles only.
+  search: (query, signal) => {
+    const q = query.trim().toLowerCase();
+    return respond({ titles: TITLES.filter((t) => t.title.toLowerCase().includes(q)).slice(0, 8), people: [] }, signal);
+  },
 };

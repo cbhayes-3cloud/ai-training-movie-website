@@ -28,7 +28,8 @@
     tv: 'M3 5h18v12H3zm2 2v8h14V7zM8 19h8v2H8z',
     list: 'M4 6h16v2H4zm0 5h16v2H4zm0 5h10v2H4z',
     check: 'M9.5 16.2L5.3 12l-1.4 1.4 5.6 5.6L20.1 8.4 18.7 7z',
-    user: 'M12 3a4.5 4.5 0 110 9 4.5 4.5 0 010-9zm0 11c4.4 0 8 2.2 8 5v2H4v-2c0-2.8 3.6-5 8-5z'
+    user: 'M12 3a4.5 4.5 0 110 9 4.5 4.5 0 010-9zm0 11c4.4 0 8 2.2 8 5v2H4v-2c0-2.8 3.6-5 8-5z',
+    close: 'M6.4 5L12 10.6 17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4z'
   };
 
   function Icon(props) {
@@ -76,9 +77,205 @@
     return h('a', { className: 'rs-wordmark', href: props.href || '/', 'aria-label': (props.brand || 'Reelscore') + ' home' }, props.brand || 'Reelscore');
   }
 
+  /* Critically damped spring (SmoothDamp): eases toward a moving target and keeps its velocity when the target changes mid-flight. */
+  function smoothDamp(cur, target, vel, smoothTime, dt) {
+    var omega = 2 / smoothTime, x = omega * dt;
+    var decay = 1 / (1 + x + 0.48 * x * x + 0.235 * x * x * x);
+    var change = cur - target;
+    var temp = (vel + omega * change) * dt;
+    return [target + (change + temp) * decay, (vel - omega * temp) * decay];
+  }
+
+  var SEARCH_SMOOTH_TIME = 0.16; // seconds to cover most of the distance
+  var SEARCH_MAX = 360;
+  var SEARCH_MIN = 220; // below this the field covers the links, then the wordmark, rather than shrink
+  var SEARCH_GAP = 16;
+
+  /* The NavBar's search: the icon grows leftwards into a field. It sizes itself to the space it finds and tells the bar what it covers. */
+  function NavSearch(props) {
+    var openSt = React.useState(!!props.defaultOpen);
+    var open = openSt[0], setOpen = openSt[1];
+    var valSt = React.useState(props.defaultValue || '');
+    var value = props.value !== undefined ? props.value : valSt[0];
+    var uid = React.useId ? React.useId() : 'rs-search';
+    var inputId = uid + '-input', panelId = uid + '-panel';
+    var wrapRef = React.useRef(null), formRef = React.useRef(null), inputRef = React.useRef(null), toggleRef = React.useRef(null), panelRef = React.useRef(null);
+    var hasPanel = open && props.panel != null && props.panel !== false;
+    var anim = React.useRef({ x: 0, v: 0, target: 0, full: 0, raf: 0, last: 0 });
+    var first = React.useRef(true);
+    var onCover = props.onCover;
+    var valueRef = React.useRef(value);
+    valueRef.current = value;
+
+    function base() { return toggleRef.current ? toggleRef.current.offsetWidth : 40; }
+
+    function paint() {
+      var a = anim.current, f = formRef.current, b = base();
+      if (!f) return;
+      f.style.width = a.x + 'px';
+      if (panelRef.current) panelRef.current.style.width = a.x + 'px';
+      var p = a.full > b ? (a.x - b) / (a.full - b) : 0;
+      f.style.setProperty('--rs-search-p', String(Math.max(0, Math.min(1, p))));
+    }
+
+    function run(instant) {
+      var a = anim.current;
+      var reduced = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (instant || reduced) { cancelAnimationFrame(a.raf); a.raf = 0; a.x = a.target; a.v = 0; paint(); return; }
+      if (a.raf) return;
+      a.last = performance.now();
+      function tick(now) {
+        var dt = Math.min(0.064, (now - a.last) / 1000);
+        a.last = now;
+        var r = smoothDamp(a.x, a.target, a.v, SEARCH_SMOOTH_TIME, dt);
+        a.x = r[0]; a.v = r[1];
+        if (Math.abs(a.x - a.target) < 0.5 && Math.abs(a.v) < 10) { a.x = a.target; a.v = 0; a.raf = 0; paint(); return; }
+        paint();
+        a.raf = requestAnimationFrame(tick);
+      }
+      a.raf = requestAnimationFrame(tick);
+    }
+
+    // Widest field that fits left of the icon: clear of the links, else over the links, else over the wordmark too.
+    function measure() {
+      var wrap = wrapRef.current, inner = wrap && wrap.closest('.rs-nav__inner');
+      if (!inner) return { w: SEARCH_MAX, cover: null };
+      var right = wrap.getBoundingClientRect().right;
+      var box = inner.getBoundingClientRect();
+      var start = box.left + (parseFloat(getComputedStyle(inner).paddingLeft) || 0);
+      var links = inner.querySelector('.rs-nav__links');
+      var list = links && getComputedStyle(links).display !== 'none' ? links.querySelector('ul') : null;
+      var mark = inner.querySelector('.rs-wordmark');
+      var edges = [];
+      if (list) edges.push({ edge: list.getBoundingClientRect().right + SEARCH_GAP, cover: null });
+      if (mark) edges.push({ edge: mark.getBoundingClientRect().right + SEARCH_GAP, cover: list ? 'links' : null });
+      edges.push({ edge: start, cover: 'all' });
+      for (var i = 0; i < edges.length; i++) {
+        var room = right - edges[i].edge;
+        if (room >= SEARCH_MIN || i === edges.length - 1) return { w: Math.max(base(), Math.min(SEARCH_MAX, room)), cover: edges[i].cover };
+      }
+    }
+
+    function expand(instant) {
+      var m = measure(), a = anim.current;
+      if (onCover) onCover(m.cover);
+      a.full = a.target = m.w;
+      run(instant);
+    }
+
+    React.useLayoutEffect(function () {
+      var a = anim.current, instant = first.current;
+      first.current = false;
+      if (instant && !open) { a.x = a.target = base(); paint(); return; }
+      if (open) expand(instant);
+      else { if (onCover) onCover(null); a.target = base(); run(false); }
+    }, [open]);
+
+    React.useEffect(function () {
+      if (!open || typeof ResizeObserver === 'undefined') return;
+      var inner = wrapRef.current && wrapRef.current.closest('.rs-nav__inner');
+      if (!inner) return;
+      var ro = new ResizeObserver(function () { expand(false); });
+      ro.observe(inner);
+      return function () { ro.disconnect(); };
+    }, [open]);
+
+    React.useEffect(function () { return function () { cancelAnimationFrame(anim.current.raf); }; }, []);
+
+    function setValue(v) {
+      if (props.value === undefined) valSt[1](v);
+      if (props.onChange) props.onChange(v);
+    }
+    function show() {
+      if (!open) { setOpen(true); if (props.onOpen) props.onOpen(); }
+      var el = inputRef.current;
+      if (!el) return;
+      el.focus({ preventScroll: true });
+      // Reopening with earlier text: carry on typing after it, not before it.
+      try { el.setSelectionRange(el.value.length, el.value.length); } catch (e) { /* not every input type allows it */ }
+    }
+    var openRef = React.useRef(open);
+    openRef.current = open;
+    function hide(refocus) {
+      if (!openRef.current) return;
+      setOpen(false);
+      if (props.onClose) props.onClose();
+      if (refocus && toggleRef.current) toggleRef.current.focus();
+    }
+    function submit() {
+      var q = value.trim();
+      if (q && props.onSubmit) props.onSubmit(q);
+    }
+    // Keep focus in the field while its own buttons are pressed (Safari doesn't focus buttons on click).
+    function keepFocus(e) { if (open) e.preventDefault(); }
+
+    // Arrow keys step from the field through the panel's links and buttons, and back up to the field.
+    function stops() { return panelRef.current ? Array.prototype.slice.call(panelRef.current.querySelectorAll('a[href], button:not([disabled])')) : []; }
+    function step(from, dir) {
+      var list = stops(), i = list.indexOf(from), next = i + dir;
+      if (next < 0) { if (inputRef.current) inputRef.current.focus(); return; }
+      if (list[Math.min(next, list.length - 1)]) list[Math.min(next, list.length - 1)].focus();
+    }
+    function onPanelKey(e) {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); step(document.activeElement, e.key === 'ArrowDown' ? 1 : -1); }
+      else if (e.key === 'Escape') { e.preventDefault(); hide(true); }
+    }
+
+    return h('div', {
+      ref: wrapRef, className: 'rs-nav__search',
+      // An empty field closes when focus moves elsewhere on the page, not when the window loses focus.
+      onBlur: function () {
+        setTimeout(function () {
+          var w = wrapRef.current;
+          if (w && document.hasFocus() && !w.contains(document.activeElement) && !valueRef.current) hide(false);
+        }, 0);
+      }
+    },
+      h('form', {
+        ref: formRef, role: 'search', className: cx('rs-search', open && 'is-open', hasPanel && 'has-panel'),
+        onSubmit: function (e) { e.preventDefault(); submit(); }
+      },
+        h('button', {
+          ref: toggleRef, type: 'button', className: 'rs-iconbtn rs-iconbtn--ghost rs-iconbtn--md rs-search__toggle',
+          'aria-label': 'Search', title: 'Search', 'aria-expanded': open ? 'true' : 'false', 'aria-controls': inputId,
+          onMouseDown: keepFocus,
+          onClick: function () { if (open && value.trim()) submit(); else show(); }
+        }, h(Icon, { name: 'search', size: 20 })),
+        h('input', {
+          ref: inputRef, id: inputId, type: 'search', className: 'rs-search__input',
+          placeholder: props.placeholder || 'Search films and series', 'aria-label': props.placeholder || 'Search films and series',
+          autoComplete: 'off', enterKeyHint: 'search', value: value,
+          tabIndex: open ? 0 : -1, 'aria-hidden': open ? undefined : 'true', 'aria-controls': hasPanel ? panelId : undefined,
+          onFocus: function () { if (!open) show(); },
+          onChange: function (e) { setValue(e.target.value); },
+          onKeyDown: function (e) {
+            if (e.key === 'Escape') { e.preventDefault(); hide(true); }
+            else if (e.key === 'ArrowDown' && hasPanel) { e.preventDefault(); step(null, 1); }
+          }
+        }),
+        open ? h('button', {
+          type: 'button', className: 'rs-iconbtn rs-iconbtn--ghost rs-iconbtn--sm rs-search__close',
+          'aria-label': value ? 'Clear search' : 'Close search', title: value ? 'Clear search' : 'Close search',
+          onMouseDown: keepFocus,
+          onClick: function () { setValue(''); hide(true); }
+        }, h(Icon, { name: 'close', size: 16 })) : null
+      ),
+      // Results or suggestions the consumer renders, joined to the bottom of the field and as wide as it.
+      hasPanel ? h('div', {
+        ref: function (el) { panelRef.current = el; if (el) paint(); },
+        id: panelId, className: 'rs-search__panel', role: 'region', 'aria-label': props.panelLabel || 'Search results',
+        onKeyDown: onPanelKey,
+        // Following a link out of the panel closes the search; the text stays for next time.
+        onClick: function (e) { if (e.target.closest && e.target.closest('a[href]')) hide(false); }
+      }, props.panel) : null
+    );
+  }
+
   function NavBar(props) {
     var links = props.links || [];
-    return h('header', { className: cx('rs-nav', props.sticky && 'rs-nav--sticky', props.className) },
+    var coverSt = React.useState(null);
+    var cover = coverSt[0];
+    return h('header', { className: cx('rs-nav', props.sticky && 'rs-nav--sticky', cover && 'rs-nav--search-' + cover, props.className) },
       h('div', { className: 'rs-nav__inner' },
         h(Wordmark, { brand: props.brand, href: props.homeHref }),
         h('nav', { className: 'rs-nav__links', 'aria-label': 'Primary' },
@@ -88,7 +285,12 @@
           }))
         ),
         h('div', { className: 'rs-nav__actions' },
-          h(IconButton, { icon: 'search', label: 'Search', onClick: props.onSearch }),
+          h(NavSearch, {
+            placeholder: props.searchPlaceholder, value: props.searchValue, defaultValue: props.defaultSearchValue,
+            defaultOpen: props.defaultSearchOpen, onChange: props.onSearchChange, onSubmit: props.onSearchSubmit,
+            onOpen: props.onSearch, onClose: props.onSearchClose, onCover: coverSt[1],
+            panel: props.searchResults, panelLabel: props.searchResultsLabel
+          }),
           h(IconButton, { icon: 'bell', label: props.notifications ? 'Notifications, ' + props.notifications + ' new' : 'Notifications', badge: !!props.notifications, onClick: props.onNotifications, className: 'rs-nav__bell' }),
           h('button', { type: 'button', className: 'rs-avatar', 'aria-label': props.avatarLabel || 'Account', onClick: props.onAccount },
             props.avatarSrc ? h('img', { src: props.avatarSrc, alt: '' }) : h('span', { 'aria-hidden': 'true' }, props.initials || h(Icon, { name: 'user', size: 18 })))

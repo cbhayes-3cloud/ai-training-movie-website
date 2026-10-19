@@ -63,6 +63,14 @@ export interface TitleDetails extends Title {
   similar: Title[];
 }
 
+/** Someone found by search, with what they're best known for. */
+export interface PersonMatch extends Person {
+  /** Their main line of work, such as "Acting" or "Directing". */
+  department?: string;
+  /** Their best-known films and series, most famous first. */
+  knownFor: Title[];
+}
+
 /** One title on a person's page, with what they did on it. */
 export interface Credit {
   /** Its poster is a small thumbnail. */
@@ -102,6 +110,23 @@ export interface PersonDetails extends Person {
   links: { imdb?: string; instagram?: string; homepage?: string };
 }
 
+/** What a search finds: films and series together, most popular first, and people. */
+export interface SearchResults {
+  titles: Title[];
+  people: PersonMatch[];
+}
+
+/** One page of a search of a single kind, for the search results page. */
+export interface SearchPage<T> {
+  items: T[];
+  /** Every match, across all pages. */
+  total: number;
+  page: number;
+  totalPages: number;
+  /** TMDB's popularity score for the first match, to put the stronger kind first. */
+  topPopularity?: number;
+}
+
 /** Which side of the catalogue a browse page shows: films, series, or both mixed (the homepage). */
 export type Media = Title['kind'] | 'all';
 
@@ -127,4 +152,10 @@ export interface CatalogApi {
   getPerson(id: string, signal?: AbortSignal): Promise<PersonDetails>;
   /** Genre labels to offer as filters, in display order. */
   getGenres(media: Media, signal?: AbortSignal): Promise<string[]>;
+  /** Films, series and people whose names match `query`. */
+  search(query: string, signal?: AbortSignal): Promise<SearchResults>;
+  /** One page (from 1) of the films or series matching `query`, in TMDB's relevance order. */
+  searchTitles(kind: Title['kind'], query: string, page: number, signal?: AbortSignal): Promise<SearchPage<Title>>;
+  /** One page (from 1) of the people matching `query`, in TMDB's relevance order. */
+  searchPeople(query: string, page: number, signal?: AbortSignal): Promise<SearchPage<PersonMatch>>;
 }
