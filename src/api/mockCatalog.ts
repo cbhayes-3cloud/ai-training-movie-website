@@ -81,4 +81,8 @@ export const mockCatalog: CatalogApi = {
     respond({ movie: ofKind(LISTS[list], 'movie', limit), series: ofKind(LISTS[list], 'series', limit) }, signal),
   getTitle: async (id, signal) => respond(details(id), signal),
   getGenres: (_media, signal) => respond(GENRES, signal),
+  // The sample titles have no people, so there are no person pages.
+  getPerson: async (id) => {
+    throw new Error(`The sample data has no people, so there's no person with the id "${id}".`);
+  },
 };

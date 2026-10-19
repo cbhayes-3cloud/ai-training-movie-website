@@ -63,6 +63,45 @@ export interface TitleDetails extends Title {
   similar: Title[];
 }
 
+/** One title on a person's page, with what they did on it. */
+export interface Credit {
+  /** Its poster is a small thumbnail. */
+  title: Title;
+  /** Cast: the character ("Maggie Dunne", or "Self"). Crew: the jobs ("Director, Screenplay"). */
+  role?: string;
+  /** Series: how many episodes they're credited in. */
+  episodes?: number;
+  /** ISO release or first air date. Missing for titles without one yet. */
+  date?: string;
+}
+
+/** A person's credits in one line of work: "Acting", "Directing", "Writing" and so on. */
+export interface CreditGroup {
+  department: string;
+  /** One per title, newest first, undated titles at the top. */
+  credits: Credit[];
+}
+
+/** Everything the person page shows. */
+export interface PersonDetails extends Person {
+  /** Their main line of work, such as "Acting". */
+  department?: string;
+  /** Plain text; paragraphs are separated by newlines. */
+  biography?: string;
+  /** ISO dates. */
+  birthday?: string;
+  deathday?: string;
+  birthplace?: string;
+  /** Other names they're credited under, in Latin script. */
+  aliases: string[];
+  /** Their main department first, then the rest by size. */
+  credits: CreditGroup[];
+  /** Their best-known titles, most voted first, with full-size posters and backdrops. */
+  knownFor: Title[];
+  /** Pages about them elsewhere. */
+  links: { imdb?: string; instagram?: string; homepage?: string };
+}
+
 /** Which side of the catalogue a browse page shows: films, series, or both mixed (the homepage). */
 export type Media = Title['kind'] | 'all';
 
@@ -84,6 +123,8 @@ export interface CatalogApi {
   getListByKind(list: ListId, signal?: AbortSignal, limit?: number): Promise<Record<Title['kind'], Title[]>>;
   /** One title by its `Title.id`, for the title page. */
   getTitle(id: string, signal?: AbortSignal): Promise<TitleDetails>;
+  /** One person by their `Person.id`, for the person page. */
+  getPerson(id: string, signal?: AbortSignal): Promise<PersonDetails>;
   /** Genre labels to offer as filters, in display order. */
   getGenres(media: Media, signal?: AbortSignal): Promise<string[]>;
 }

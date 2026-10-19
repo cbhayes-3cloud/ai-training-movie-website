@@ -1,4 +1,4 @@
-import type { CatalogApi, ListId, Media, Person, Review, Title, TitleDetails } from './types';
+import type { CatalogApi, Credit, CreditGroup, ListId, Media, Person, Review, Title, TitleDetails } from './types';
 
 /*
  * TMDB adapter for films and series. Requests go through our proxy at /api/tmdb,
@@ -9,6 +9,7 @@ const API = '/api/tmdb';
 const IMAGES = 'https://image.tmdb.org/t/p/';
 const POSTER_SIZE = 'w500'; // cards are 184px wide, so w500 stays sharp on 2x screens
 const PROFILE_SIZE = 'h632'; // CastStrip frames are 152×208, so h632 stays sharp on 2x screens
+const THUMB_SIZE = 'w154'; // search results and filmography rows show 40–44px-wide thumbnails
 const BACKDROP_SIZE = 'original'; // the hero wants 1600px+, and the largest resized backdrop is w1280
 const REGION = 'US';
 
@@ -87,6 +88,36 @@ interface TmdbItem {
   genre_ids?: number[];
   /** Only on the mixed `/trending/all` lists: "movie", "tv" or "person". */
   media_type?: string;
+  adult?: boolean;
+}
+
+/** A title in a person's `combined_credits`, tagged with `media_type`. */
+interface TmdbCredit extends TmdbItem {
+  /** Cast. */
+  character?: string;
+  /** Film cast: billing order, 0 first. */
+  order?: number;
+  /** Series cast and crew. */
+  episode_count?: number;
+  /** Crew. */
+  job?: string;
+  department?: string;
+}
+
+interface TmdbPersonDetails {
+  id: number;
+  name: string;
+  biography?: string;
+  birthday?: string | null;
+  deathday?: string | null;
+  place_of_birth?: string | null;
+  known_for_department?: string;
+  also_known_as?: string[];
+  profile_path?: string | null;
+  homepage?: string | null;
+  // From append_to_response.
+  combined_credits?: { cast: TmdbCredit[]; crew: TmdbCredit[] };
+  external_ids?: { imdb_id?: string | null; instagram_id?: string | null };
 }
 
 interface TmdbDetails extends Omit<TmdbItem, 'genre_ids'> {
@@ -429,6 +460,86 @@ function watchOf(d: TmdbDetails): TitleDetails['watch'] {
 
 const detailGenres = (d: TmdbDetails, media: Media) => unique((d.genres ?? []).map((g) => genreLabel(media, g.name)));
 
+/** A title with a small poster, for search results and filmography rows. */
+const searchTitle = (m: TmdbItem, names: Map<number, string>, kind: Kind): Title => ({
+  ...toTitle(m, namesFor(m.genre_ids, names, kind), kind),
+  posterUrl: image(THUMB_SIZE, m.poster_path),
+});
+
+const KNOWN_FOR_SHOWN = 12;
+/** Talk and news shows: a guest spot on one has huge vote counts but isn't what anyone is known for. */
+const TALK_AND_NEWS = new Set([10763, 10767]);
+const SELF = /^(self|himself|herself|themselves)\b/i;
+/* A film role billed below this, or a series role in fewer episodes, is a cameo or a guest spot. */
+const MAX_BILLING = 15;
+const MIN_EPISODES = 3;
+/** Aliases in other scripts (TMDB lists names in Korean, Cyrillic and more) would be unreadable to most viewers. */
+const LATIN = /^[\p{Script=Latin}\p{M}\s.,'’-]+$/u;
+
+type RawCredit = { m: TmdbCredit; kind: Kind; department: string; role?: string };
+
+/** Every credit as one list: cast under "Acting", crew under their department. Adult titles are dropped. */
+function rawCredits(p: TmdbPersonDetails): RawCredit[] {
+  const { cast = [], crew = [] } = p.combined_credits ?? {};
+  return [
+    ...cast.map((m) => ({ m, department: 'Acting', role: m.character?.trim() || undefined })),
+    ...crew.map((m) => ({ m, department: m.department || 'Crew', role: m.job || undefined })),
+  ].flatMap((c) => {
+    const kind = KIND_OF[c.m.media_type ?? ''];
+    return kind && !c.m.adult ? [{ ...c, kind }] : [];
+  });
+}
+
+/** One group per department, one credit per title in each (roles merged), newest first. */
+function creditGroups(raw: RawCredit[], main: string | undefined, names: Record<Kind, Map<number, string>>): CreditGroup[] {
+  const groups = new Map<string, Map<string, Credit>>();
+  for (const { m, kind, department, role } of raw) {
+    const titles = groups.get(department) ?? groups.set(department, new Map()).get(department)!;
+    const id = `${PATH[kind]}-${m.id}`;
+    const seen = titles.get(id);
+    if (seen) {
+      const roles = new Set([...(seen.role?.split(', ') ?? []), ...(role ? [role] : [])]);
+      seen.role = [...roles].join(', ') || undefined;
+      seen.episodes = Math.max(seen.episodes ?? 0, m.episode_count ?? 0) || undefined;
+      continue;
+    }
+    titles.set(id, {
+      title: searchTitle(m, names[kind], kind),
+      role,
+      episodes: kind === 'series' ? m.episode_count || undefined : undefined,
+      date: (m.release_date ?? m.first_air_date) || undefined,
+    });
+  }
+  // Undated titles sort as the newest: they're usually announced but not out.
+  const newest = (a: Credit, b: Credit) => (b.date ?? '9999').localeCompare(a.date ?? '9999');
+  return [...groups]
+    .map(([department, titles]) => ({ department, credits: [...titles.values()].sort(newest) }))
+    .sort((a, b) => Number(b.department === main) - Number(a.department === main) || b.credits.length - a.credits.length);
+}
+
+/**
+ * Their most-voted titles in their main line of work. Leading roles come before cameos and guest
+ * spots, and talk shows and appearances as themselves are left out.
+ */
+function knownForOf(raw: RawCredit[], main: string | undefined, names: Record<Kind, Map<number, string>>): Title[] {
+  const inMain = raw.filter((c) => c.department === main);
+  const pool = (inMain.length ? inMain : raw).filter(
+    (c) => !(c.m.genre_ids ?? []).some((g) => TALK_AND_NEWS.has(g)) && !(c.department === 'Acting' && c.role && SELF.test(c.role)),
+  );
+  const minor = (c: RawCredit) =>
+    c.department === 'Acting' &&
+    (c.kind === 'series' ? (c.m.episode_count ?? 0) < MIN_EPISODES : (c.m.order ?? 0) > MAX_BILLING);
+  const seen = new Set<string>();
+  return pool
+    .sort((a, b) => Number(minor(a)) - Number(minor(b)) || (b.m.vote_count ?? 0) - (a.m.vote_count ?? 0))
+    .filter((c) => {
+      const id = `${c.kind}-${c.m.id}`;
+      return !seen.has(id) && seen.add(id);
+    })
+    .slice(0, KNOWN_FOR_SHOWN)
+    .map((c) => toTitle(c.m, namesFor(c.m.genre_ids, names[c.kind], c.kind), c.kind));
+}
+
 const NO_TRENDING: Record<Media, string> = { movie: 'films', series: 'series', all: 'films or series' };
 
 export const tmdbCatalog: CatalogApi = {
@@ -488,6 +599,40 @@ export const tmdbCatalog: CatalogApi = {
       },
       watch: watchOf(d),
       similar: related.map((m) => toTitle(m, namesFor(m.genre_ids, names, kind), kind)),
+    };
+  },
+
+  async getPerson(id, signal) {
+    const match = /^person-(\d+)$/.exec(id);
+    if (!match) throw new Error(`There's no person with the id "${id}".`);
+
+    const [p, movie, series] = await Promise.all([
+      get<TmdbPersonDetails>(`/person/${match[1]}`, { append_to_response: 'combined_credits,external_ids' }, signal),
+      genres('movie'),
+      genres('series'),
+    ]);
+    const names = { movie, series };
+    const main = p.known_for_department || undefined;
+    const raw = rawCredits(p);
+    const ids = p.external_ids ?? {};
+
+    return {
+      id,
+      name: p.name,
+      photoUrl: image(PROFILE_SIZE, p.profile_path),
+      department: main,
+      biography: p.biography?.trim() || undefined,
+      birthday: p.birthday || undefined,
+      deathday: p.deathday || undefined,
+      birthplace: p.place_of_birth?.trim() || undefined,
+      aliases: unique((p.also_known_as ?? []).map((a) => a.trim()).filter((a) => a && a !== p.name && LATIN.test(a))),
+      credits: creditGroups(raw, main, names),
+      knownFor: knownForOf(raw, main, names),
+      links: {
+        imdb: ids.imdb_id ? `https://www.imdb.com/name/${ids.imdb_id}/` : undefined,
+        instagram: ids.instagram_id ? `https://www.instagram.com/${ids.instagram_id}/` : undefined,
+        homepage: p.homepage || undefined,
+      },
     };
   },
 

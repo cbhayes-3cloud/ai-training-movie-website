@@ -2,7 +2,7 @@ import { mockCatalog } from './mockCatalog';
 import { tmdbCatalog } from './tmdbCatalog';
 import type { CatalogApi } from './types';
 
-export type { CatalogApi, ListId, Media, Person, Review, Title, TitleDetails } from './types';
+export type { CatalogApi, Credit, CreditGroup, ListId, Media, Person, PersonDetails, Review, Title, TitleDetails } from './types';
 
 /**
  * The data source the whole app reads from: TMDB through our proxy, or the

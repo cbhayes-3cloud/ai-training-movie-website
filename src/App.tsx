@@ -3,6 +3,7 @@ import type { ListId, Media } from './api';
 import { useLibrary } from './hooks/useLibrary';
 import { BrowsePage } from './pages/BrowsePage';
 import { LIST_IDS, ListPage } from './pages/ListPage';
+import { PersonPage } from './pages/PersonPage';
 import { TitlePage } from './pages/TitlePage';
 import { useLocation } from './router';
 
@@ -40,6 +41,7 @@ export default function App() {
 
   const route = path.replace(/\/+$/, '') || '/';
   const titleId = /^\/title\/([^/]+)$/.exec(route)?.[1];
+  const personId = /^\/person\/(\d+)$/.exec(route)?.[1];
   // /lists/top-rated?media=series; the media defaults to both.
   const listId = /^\/lists\/([^/]+)$/.exec(route)?.[1];
   const list = isList(listId) ? listId : undefined;
@@ -57,11 +59,13 @@ export default function App() {
         : route === '/series'
           ? 'Series'
           : 'Home';
+  // A person page sits under no section.
+  const active = personId ? undefined : section;
 
   return (
     <div className="app">
       <NavBar
-        links={NAV_LINKS.map((l) => ({ ...l, active: l.label === section }))}
+        links={NAV_LINKS.map((l) => ({ ...l, active: l.label === active }))}
         homeHref="/"
         notifications={2}
         initials="CH"
@@ -69,7 +73,9 @@ export default function App() {
       />
 
       <main>
-        {titleId ? (
+        {personId ? (
+          <PersonPage key={personId} id={`person-${personId}`} library={library} />
+        ) : titleId ? (
           <TitlePage key={titleId} id={decodeURIComponent(titleId)} library={library} />
         ) : list ? (
           <ListPage list={list} media={listMedia} library={library} />
@@ -81,7 +87,7 @@ export default function App() {
 
       <Footer links={FOOTER_LINKS} homeHref="/" copyright={`© ${new Date().getFullYear()} Reelscore`} />
 
-      <BottomNav items={BOTTOM_NAV.map((i) => ({ ...i, active: i.label === section }))} />
+      <BottomNav items={BOTTOM_NAV.map((i) => ({ ...i, active: i.label === active }))} />
     </div>
   );
 }

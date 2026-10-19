@@ -10,6 +10,9 @@ import { useEffect, useState } from 'react';
 /** The title page for a `Title.id`. */
 export const titleHref = (id: string) => `/title/${encodeURIComponent(id)}`;
 
+/** The person page for a `Person.id` ("person-287" → "/person/287"). */
+export const personHref = (id: string) => `/person/${encodeURIComponent(id.replace(/^person-/, ''))}`;
+
 /** A full list page, such as `/lists/top-rated?media=series`. */
 export const listHref = (list: string, media: string) => `/lists/${list}?media=${encodeURIComponent(media)}`;
 
