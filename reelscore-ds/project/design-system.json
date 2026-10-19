@@ -11,10 +11,10 @@
   },
   "groups": [],
   "lastChange": {
-    "at": "2026-10-12T16:48:43Z",
+    "at": "2026-10-19T17:45:00Z",
     "by": "Chris",
-    "note": "Initial system from the reference screenshot: tokens, 13 components, brand book, cover.",
-    "via": "Claude (Cowork)"
+    "note": "NavBar search: the icon grows into a field on a spring, with a searchResults panel joined under it; close icon added. Synced from the reelscore-ds repo.",
+    "via": "Claude Code (reelscore-ds re-sync)"
   },
   "layout": "files",
   "libraries": [

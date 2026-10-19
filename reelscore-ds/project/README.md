@@ -54,7 +54,7 @@ The system has one theme, Dark. Artwork carries the color; the interface stays n
 ## Iconography
 
 - A small set of filled glyphs on a 24px grid, drawn for this system and exported by the `Icon` component (star, heart, eye, play, plus, search, bell, chevrons, home, film, tv, list, check, user, close). They fill with `currentColor`.
-- The reference screenshot used a generic filled icon style; these glyphs approximate it and are not copied from any icon library. Replace them with a licensed set (for example Material Symbols, filled) if you need more than these 15, and keep the filled style.
+- The reference screenshot used a generic filled icon style; these glyphs approximate it and are not copied from any icon library. Replace them with a licensed set (for example Material Symbols, filled) if you need more than these 16, and keep the filled style.
 - Sizes: 13–16px inline with text, 20px in buttons and the top nav, 22px in the bottom nav, 24px for carousel arrows.
 - No logo file exists yet: the wordmark is the name set in Bebas Neue in `brand`, rendered by NavBar and Footer. Replace it when a real logo is drawn.
 - The TMDB logo (TMDB's official "alt short" mark) appears only in the Footer, as the attribution TMDB's API terms require. It is built into the Footer, always smaller than the wordmark, and never recolored.
