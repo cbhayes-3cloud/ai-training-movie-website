@@ -34,7 +34,7 @@ The system has one theme, Dark. Artwork carries the color; the interface stays n
 - Breakpoints: `bp-sm` 480px, `bp-md` 768px, `bp-lg` 1024px, `bp-xl` 1280px. Design at 375px first.
 - Side gutters: `gutter-sm` (16px) on phones, `gutter-md` (32px) from 768px, `gutter-lg` (64px) from 1280px. Content max width 1440px.
 - Under 768px: NavBar shows only the wordmark, search and avatar; sections move to BottomNav. Pad the page bottom by `bottom-nav-height` plus the safe-area inset.
-- Rows scroll horizontally with scroll snap (PosterRow, Tabs, GenreChips) rather than wrapping into tall grids. Arrows appear only from 1024px on hover-capable pointers.
+- Rows scroll horizontally with scroll snap (PosterRow, CastStrip, Tabs, GenreChips) rather than wrapping into tall grids. Arrows appear only from 1024px on hover-capable pointers.
 - Every tappable thing has a hit area of at least `tap-target` (44px). Small icon buttons keep an invisible extended hit area.
 - Section rhythm: `space-6` between sections on phones, `space-7` on desktop; `space-5` between blocks inside the hero.
 
@@ -56,8 +56,11 @@ The system has one theme, Dark. Artwork carries the color; the interface stays n
 - A small set of filled glyphs on a 24px grid, drawn for this system and exported by the `Icon` component (star, heart, eye, play, plus, search, bell, chevrons, home, film, tv, list, check, user, close). They fill with `currentColor`.
 - The reference screenshot used a generic filled icon style; these glyphs approximate it and are not copied from any icon library. Replace them with a licensed set (for example Material Symbols, filled) if you need more than these 16, and keep the filled style.
 - Sizes: 13–16px inline with text, 20px in buttons and the top nav, 22px in the bottom nav, 24px for carousel arrows.
-- No logo file exists yet: the wordmark is the name set in Bebas Neue in `brand`, rendered by NavBar. Replace it when a real logo is drawn.
+- No logo file exists yet: the wordmark is the name set in Bebas Neue in `brand`, rendered by NavBar and Footer. Replace it when a real logo is drawn.
+- The TMDB logo (TMDB's official "alt short" mark) appears only in the Footer, as the attribution TMDB's API terms require. It is built into the Footer, always smaller than the wordmark, and never recolored.
 
 ## Components
 
-Icon, Button, IconButton, NavBar, BottomNav, Tabs, GenreChips, AgeBadge, RatingBadge, RatingInput, MovieCard, PosterRow and Hero, exported on `window.Reelscore` by `components/bundle.js` (React 18). Read each component's README for what you provide and its do's and don'ts. Placeholder titles in the previews (Harbor Lights, Ironbark, The Long Orbit) are invented.
+Icon, Button, IconButton, NavBar, BottomNav, Tabs, GenreChips, AgeBadge, RatingBadge, RatingInput, MovieCard, PosterRow, Hero, CastStrip and Footer, exported on `window.Reelscore` by `components/bundle.js` (React 18). Read each component's README for what you provide and its do's and don'ts. Placeholder titles in the previews (Harbor Lights, Ironbark, The Long Orbit) are invented.
+
+Movie data comes from TMDB. Every page that shows it ends with `Footer`, which carries TMDB's logo and the notice their terms require: "This website uses TMDB and the TMDB APIs but is not endorsed, certified, or otherwise approved by TMDB." Don't remove or reword it.
