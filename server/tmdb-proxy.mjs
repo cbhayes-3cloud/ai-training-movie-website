@@ -21,7 +21,8 @@ const ALLOWED_PATHS = [
   /^\/tv\/\d+$/,
   /^\/discover\/tv$/,
   /^\/genre\/tv\/list$/,
-  /^\/search\/movie$/,
+  /^\/search\/(movie|tv|person)$/,
+  /^\/person\/\d+$/,
   /^\/configuration$/,
 ];
 

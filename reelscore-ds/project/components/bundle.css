@@ -66,6 +66,23 @@ body { margin: 0; background: var(--surface-100); color: var(--ink); font-family
 .rs-nav__bell { display: none; }
 .rs-avatar { display: grid; place-items: center; width: 36px; height: 36px; margin-left: var(--space-2); padding: 0; border: 0; border-radius: 50%; overflow: hidden; background: var(--surface-300); color: var(--ink); cursor: pointer; font: 600 13px/1 var(--font-sans); box-shadow: 0 0 0 2px var(--surface-400); }
 .rs-avatar img { width: 100%; height: 100%; object-fit: cover; }
+/* NavBar search: the icon grows leftwards into a pill. Its width is driven by a spring in bundle.js; --rs-search-p is 0 closed, 1 open. */
+.rs-nav__links, .rs-wordmark { transition: opacity .18s ease, visibility .18s; }
+.rs-nav--search-links .rs-nav__links, .rs-nav--search-all .rs-nav__links, .rs-nav--search-all .rs-wordmark { opacity: 0; visibility: hidden; }
+.rs-nav__search { position: relative; flex: none; width: 40px; height: 40px; }
+.rs-search { --rs-search-p: 0; position: absolute; top: 0; right: 0; z-index: 1; display: flex; align-items: center; width: 100%; height: 100%; margin: 0; border-radius: var(--radius-pill); overflow: hidden; background: transparent; box-shadow: inset 0 0 0 1px transparent; transition: background-color .15s ease, box-shadow .15s ease; }
+.rs-search.is-open { background: var(--surface-200); box-shadow: inset 0 0 0 1px var(--surface-400); }
+.rs-search.is-open .rs-search__toggle:hover { background: none; }
+.rs-search__input { flex: 1; min-width: 0; height: 100%; padding: 0; border: 0; outline: 0; background: none; color: var(--ink); font: 400 15px/20px var(--font-sans); opacity: calc(var(--rs-search-p) * 1.5 - .5); appearance: none; }
+.rs-search__input::placeholder { color: var(--ink-muted); }
+.rs-search__input::-webkit-search-cancel-button { appearance: none; }
+.rs-search__close { margin-right: var(--space-2); opacity: calc(var(--rs-search-p) * 2 - 1); }
+/* Results panel: joined under the open field, the same width, sharing its outline. */
+.rs-search.has-panel { border-radius: calc(var(--tap-target) / 2) calc(var(--tap-target) / 2) 0 0; }
+.rs-search__panel { position: absolute; top: 100%; right: 0; z-index: 1; max-height: min(70vh, 520px); overflow-y: auto; overscroll-behavior: contain; padding: var(--space-2) 0; border: 1px solid var(--surface-400); border-top: 0; border-radius: 0 0 calc(var(--radius-md) * 2) calc(var(--radius-md) * 2); background: var(--surface-200); box-shadow: var(--shadow-poster); }
+.rs-nav__search:focus-within .rs-search.is-open { box-shadow: inset 0 0 0 1px var(--outline); }
+.rs-nav__search:focus-within .rs-search__panel { border-color: var(--outline); }
+@media (pointer: coarse) { .rs-nav__search { width: var(--tap-target); height: var(--tap-target); } }
 @container (min-width: 768px) {
   .rs-nav__inner { height: var(--nav-height); padding: 0 var(--gutter-md); gap: var(--space-6); }
   .rs-wordmark { font-size: 34px; }
@@ -260,7 +277,7 @@ a.rs-strip__frame:hover { box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .28); 
 .rs-strip__role { font: 400 12px/16px var(--font-sans); color: var(--ink-muted); }
 
 @media (prefers-reduced-motion: reduce) {
-  .rs-btn, .rs-card__poster, .rs-rate__fill, .rs-chip, .rs-iconbtn { transition: none; }
+  .rs-btn, .rs-card__poster, .rs-rate__fill, .rs-chip, .rs-iconbtn, .rs-search, .rs-nav__links, .rs-wordmark { transition: none; }
   .rs-card__poster:hover { transform: none; }
   .rs-strip__film::after { animation: none; background: none; }
 }

@@ -1,10 +1,15 @@
+import { useEffect, useState } from 'react';
 import { BottomNav, Footer, NavBar } from 'reelscore';
 import type { ListId, Media } from './api';
+import { SearchPanel } from './components/SearchPanel';
 import { useLibrary } from './hooks/useLibrary';
+import { useSearch } from './hooks/useSearch';
 import { BrowsePage } from './pages/BrowsePage';
 import { LIST_IDS, ListPage } from './pages/ListPage';
+import { PersonPage } from './pages/PersonPage';
+import { SearchPage } from './pages/SearchPage';
 import { TitlePage } from './pages/TitlePage';
-import { useLocation } from './router';
+import { navigate, SEARCH_TYPES, searchHref, useLocation, type SearchType } from './router';
 
 type Section = 'Home' | 'Movies' | 'Series';
 
@@ -12,6 +17,7 @@ const MEDIA: Record<Section, Media> = { Home: 'all', Movies: 'movie', Series: 's
 const SECTION_OF: Record<Media, Section> = { all: 'Home', movie: 'Movies', series: 'Series' };
 const isMedia = (m: string | null): m is Media => m === 'all' || m === 'movie' || m === 'series';
 const isList = (l: string | undefined): l is ListId => LIST_IDS.includes(l as ListId);
+const isSearchType = (t: string | null): t is SearchType => SEARCH_TYPES.includes(t as SearchType);
 
 const NAV_LINKS = [
   { label: 'Home', href: '/' },
@@ -23,7 +29,7 @@ const BOTTOM_NAV = [
   { label: 'Home', icon: 'home', href: '/' },
   { label: 'Movies', icon: 'film', href: '/movies' },
   { label: 'Series', icon: 'tv', href: '/series' },
-  { label: 'Search', icon: 'search', href: '#' },
+  { label: 'Search', icon: 'search', href: '/search' },
   { label: 'My lists', icon: 'list', href: '#' },
 ] as const;
 
@@ -37,9 +43,24 @@ const FOOTER_LINKS = [
 export default function App() {
   const library = useLibrary();
   const { path, query } = useLocation();
-
   const route = path.replace(/\/+$/, '') || '/';
+  // /search?q=dune&type=series; the type defaults to all.
+  const isSearch = route === '/search';
+  const searchQuery = isSearch ? (query.get('q') ?? '').trim() : '';
+  const typeParam = query.get('type');
+  const searchType: SearchType = isSearchType(typeParam) ? typeParam : 'all';
+
+  // The field starts with the page's search, and follows it on back and forward.
+  const [searchText, setSearchText] = useState(searchQuery);
+  useEffect(() => {
+    if (isSearch) setSearchText(searchQuery);
+  }, [isSearch, searchQuery]);
+  const search = useSearch(searchText);
+  // On the results page, the dropdown would only repeat what's below it.
+  const showPanel = search.active && !(isSearch && searchText.trim() === searchQuery);
+
   const titleId = /^\/title\/([^/]+)$/.exec(route)?.[1];
+  const personId = /^\/person\/(\d+)$/.exec(route)?.[1];
   // /lists/top-rated?media=series; the media defaults to both.
   const listId = /^\/lists\/([^/]+)$/.exec(route)?.[1];
   const list = isList(listId) ? listId : undefined;
@@ -57,19 +78,30 @@ export default function App() {
         : route === '/series'
           ? 'Series'
           : 'Home';
+  // Person and search pages sit under no section; search has its own BottomNav tab.
+  const active = personId || isSearch ? undefined : section;
 
   return (
     <div className="app">
       <NavBar
-        links={NAV_LINKS.map((l) => ({ ...l, active: l.label === section }))}
+        links={NAV_LINKS.map((l) => ({ ...l, active: l.label === active }))}
         homeHref="/"
         notifications={2}
         initials="CH"
         sticky
+        searchValue={searchText}
+        onSearchChange={setSearchText}
+        defaultSearchOpen={isSearch}
+        onSearchSubmit={(q) => navigate(searchHref(q))}
+        searchResults={showPanel ? <SearchPanel state={search} /> : null}
       />
 
       <main>
-        {titleId ? (
+        {isSearch ? (
+          <SearchPage query={searchQuery} type={searchType} library={library} />
+        ) : personId ? (
+          <PersonPage key={personId} id={`person-${personId}`} library={library} />
+        ) : titleId ? (
           <TitlePage key={titleId} id={decodeURIComponent(titleId)} library={library} />
         ) : list ? (
           <ListPage list={list} media={listMedia} library={library} />
@@ -81,7 +113,7 @@ export default function App() {
 
       <Footer links={FOOTER_LINKS} homeHref="/" copyright={`© ${new Date().getFullYear()} Reelscore`} />
 
-      <BottomNav items={BOTTOM_NAV.map((i) => ({ ...i, active: i.label === section }))} />
+      <BottomNav items={BOTTOM_NAV.map((i) => ({ ...i, active: i.label === (isSearch ? 'Search' : active) }))} />
     </div>
   );
 }

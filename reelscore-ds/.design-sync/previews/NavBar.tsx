@@ -8,6 +8,12 @@ export const Desktop = () => (
   </div>
 );
 
+export const SearchOpen = () => (
+  <div style={{ width: '100%' }}>
+    <NavBar links={links} notifications={2} initials="CH" defaultSearchOpen defaultSearchValue="Dune" />
+  </div>
+);
+
 export const Phone = () => (
   <div style={{ width: 375 }}>
     <NavBar links={links} initials="CH" />

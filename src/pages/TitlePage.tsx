@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 import { CastStrip, Hero, PosterRow, RatingBadge, RatingInput, Tabs } from 'reelscore';
 import { catalog, type Person, type Review, type TitleDetails } from '../api';
 import { focalPointFor } from '../data/focalPoints';
 import { TitleCard } from '../components/TitleRow';
 import { useAsync } from '../hooks/useAsync';
 import type { LibraryApi } from '../hooks/useLibrary';
+import { personHref } from '../router';
 import { formatDate, initials, shorten } from '../text';
 
 const REVIEW_LENGTH = 420;
@@ -127,8 +128,20 @@ function TitleView({ t, library }: { t: TitleDetails; library: LibraryApi }) {
   );
 }
 
+/** Names, comma separated, each linking to that person's page. */
 function Names({ people }: { people: Person[] }) {
-  return <>{people.map((p) => p.name).join(', ')}</>;
+  return (
+    <>
+      {people.map((p, i) => (
+        <Fragment key={`${p.id}-${i}`}>
+          {i > 0 && ', '}
+          <a className="person-name" href={personHref(p.id)}>
+            {p.name}
+          </a>
+        </Fragment>
+      ))}
+    </>
+  );
 }
 
 function Overview({ t }: { t: TitleDetails }) {
@@ -186,7 +199,6 @@ function Overview({ t }: { t: TitleDetails }) {
   );
 }
 
-/* No person pages yet, so frames aren't links; pass `href` once they exist. */
 function Cast({ title, cast }: { title: string; cast: Person[] }) {
   return (
     <section id="cast" className="title-section" aria-labelledby="cast-title">
@@ -195,7 +207,7 @@ function Cast({ title, cast }: { title: string; cast: Person[] }) {
       </h2>
       <CastStrip
         title={title}
-        people={cast.map((p, i) => ({ id: `${p.id}-${i}`, name: p.name, role: p.role, photo: p.photoUrl }))}
+        people={cast.map((p, i) => ({ id: `${p.id}-${i}`, name: p.name, role: p.role, photo: p.photoUrl, href: personHref(p.id) }))}
       />
     </section>
   );
