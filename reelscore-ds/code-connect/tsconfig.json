@@ -1,0 +1,7 @@
+{
+  "compilerOptions": {
+    "types": ["@figma/code-connect/figma-types"],
+    "noEmit": true
+  },
+  "include": ["./**/*.figma.ts"]
+}
