@@ -11,9 +11,9 @@
   },
   "groups": [],
   "lastChange": {
-    "at": "2026-10-19T17:45:00Z",
+    "at": "2026-10-23T18:00:00Z",
     "by": "Chris",
-    "note": "NavBar search: the icon grows into a field on a spring, with a searchResults panel joined under it; close icon added. Synced from the reelscore-ds repo.",
+    "note": "AccountMenu, AccountMenuItem and AccountMenuDivider added; NavBar phone menu (links and notifications behind a toggle right of the avatar); menu and settings icons; Tabs and GenreChips keep the gutter when snapping; GenreChips scroll arrows for mouse users. Synced from the reelscore-ds repo.",
     "via": "Claude Code (reelscore-ds re-sync)"
   },
   "layout": "files",
