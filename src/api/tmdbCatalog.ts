@@ -526,12 +526,60 @@ function toSearchPage<T, U>(r: SearchResponse<T>, map: (item: T) => U, popularit
   };
 }
 
+/**
+ * The films and series credited to the person a search names outright ("Brad Pitt"), most popular first,
+ * so searching for someone finds their work and not only titles that contain their name. Their credits
+ * leave out talk shows, appearances as themselves and cameos. Empty when the search names nobody.
+ */
+async function creditedTitles(query: string, signal?: AbortSignal): Promise<{ m: TmdbCredit; kind: Kind }[]> {
+  try {
+    const people = await get<Page<TmdbPerson>>('/search/person', searchParams(query), signal);
+    const wanted = query.trim().toLowerCase();
+    const person = people.results.find((p) => p.name.toLowerCase() === wanted && (p.popularity ?? 0) >= MIN_PERSON_POPULARITY);
+    if (!person) return [];
+    const details = await get<TmdbPersonDetails>(`/person/${person.id}`, { append_to_response: 'combined_credits' }, signal);
+    const seen = new Set<string>();
+    return rawCredits(details)
+      .filter(
+        (c) =>
+          (c.department === 'Acting' || c.role === 'Director') &&
+          !(c.m.genre_ids ?? []).some((g) => TALK_AND_NEWS.has(g)) &&
+          !(c.department === 'Acting' && c.role && SELF.test(c.role)) &&
+          !(c.department === 'Acting' && (c.kind === 'series' ? (c.m.episode_count ?? 0) < MIN_EPISODES : (c.m.order ?? 0) > MAX_BILLING)),
+      )
+      .sort((a, b) => (b.m.popularity ?? 0) - (a.m.popularity ?? 0))
+      .filter((c) => {
+        const id = `${c.kind}-${c.m.id}`;
+        return !seen.has(id) && seen.add(id);
+      })
+      .map(({ m, kind }) => ({ m, kind }));
+  } catch (err) {
+    if (signal?.aborted) throw err;
+    return []; // the title matches are still worth showing
+  }
+}
+
+/**
+ * A page of films or series: the credits of a person the search names come first, then TMDB's title matches.
+ * The credits take the first pages, so a title that is in both lists shows once (the page dedupes by id).
+ */
 async function searchTitles(kind: Kind, query: string, page: number, signal?: AbortSignal): Promise<SearchPage<Title>> {
-  const [r, names] = await Promise.all([
-    get<SearchResponse<TmdbItem>>(`/search/${PATH[kind]}`, searchParams(query, page), signal),
-    genres(kind),
-  ]);
-  return toSearchPage(r, (m) => toTitle(m, namesFor(m.genre_ids, names, kind), kind), (m) => m.popularity);
+  const [credited, names] = await Promise.all([creditedTitles(query, signal), genres(kind)]);
+  const credits = credited.filter((c) => c.kind === kind);
+  const creditPages = Math.ceil(credits.length / PAGE_SIZE);
+  const r = await get<SearchResponse<TmdbItem>>(
+    `/search/${PATH[kind]}`,
+    searchParams(query, page <= creditPages ? 1 : page - creditPages),
+    signal,
+  );
+  const toItem = (m: TmdbItem) => toTitle(m, namesFor(m.genre_ids, names, kind), kind);
+  return {
+    items: page <= creditPages ? credits.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE).map((c) => toItem(c.m)) : r.results.map(toItem),
+    total: credits.length + r.total_results,
+    page,
+    totalPages: creditPages + r.total_pages,
+    topPopularity: Math.max(credits[0]?.m.popularity ?? 0, r.results[0]?.popularity ?? 0) || undefined,
+  };
 }
 
 async function searchPeople(query: string, page: number, signal?: AbortSignal): Promise<SearchPage<PersonMatch>> {
@@ -546,18 +594,22 @@ async function searchPeople(query: string, page: number, signal?: AbortSignal): 
 async function search(query: string, signal?: AbortSignal): Promise<SearchResults> {
   // Page 1 of the same requests the search page makes, so the proxy's cache serves both.
   const params = searchParams(query);
-  const [movies, shows, people, movieNames, tvNames] = await Promise.all([
+  const [movies, shows, people, credited, movieNames, tvNames] = await Promise.all([
     get<Page<TmdbItem>>('/search/movie', params, signal),
     get<Page<TmdbItem>>('/search/tv', params, signal),
     get<Page<TmdbPerson>>('/search/person', params, signal),
+    creditedTitles(query, signal),
     genres('movie'),
     genres('series'),
   ]);
-  // Each search is in TMDB's relevance order; popularity interleaves the two kinds.
+  // Each search is in TMDB's relevance order; popularity interleaves the kinds, and the credits of a named person.
+  const seen = new Set<string>();
   const titles = [
+    ...credited,
     ...movies.results.map((m) => ({ m, kind: 'movie' as Kind })),
     ...shows.results.map((m) => ({ m, kind: 'series' as Kind })),
   ]
+    .filter(({ m, kind }) => !seen.has(`${kind}-${m.id}`) && seen.add(`${kind}-${m.id}`))
     .sort((a, b) => (b.m.popularity ?? 0) - (a.m.popularity ?? 0))
     .slice(0, SEARCH_TITLES)
     .map(({ m, kind }) => searchTitle(m, kind === 'movie' ? movieNames : tvNames, kind));
