@@ -7,11 +7,6 @@
   font-family: var(--font-sans);
 }
 
-/* Room for the phone bottom nav, which hides from 768px */
-@media (max-width: 767px) {
-  .app { padding-bottom: calc(var(--bottom-nav-height) + env(safe-area-inset-bottom, 0px)); }
-}
-
 /* Hero footprint while the featured title loads */
 .hero-placeholder { position: relative; background: var(--surface-0); }
 .hero-placeholder__body { aspect-ratio: 4 / 3; max-height: 600px; background: linear-gradient(to bottom, var(--backdrop), var(--surface-0)); }

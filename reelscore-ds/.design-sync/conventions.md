@@ -20,7 +20,7 @@ Style components with their props: `variant`, `size`, `tone`, `icon`, `pressed`,
 ## Content rules
 - Sentence case everywhere except Button labels, which render uppercase automatically.
 - Scores always show one decimal and are out of 10 (`rating={7.0}` displays "7.0").
-- No emoji; use `Icon` (`star`, `heart`, `eye`, `play`, `plus`, `search`, `bell`, `chevronLeft`, `chevronRight`, `home`, `film`, `tv`, `list`, `check`, `user`, `close`, `settings`).
+- No emoji; use `Icon` (`star`, `heart`, `eye`, `play`, `plus`, `search`, `bell`, `chevronLeft`, `chevronRight`, `home`, `film`, `tv`, `list`, `check`, `user`, `close`, `settings`, `menu`).
 - `brand` red is never a large background.
 
 ## Where the truth lives

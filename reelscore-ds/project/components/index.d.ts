@@ -1,6 +1,6 @@
 import type * as React from 'react';
 
-export type IconName = 'star' | 'heart' | 'eye' | 'play' | 'plus' | 'search' | 'bell' | 'chevronLeft' | 'chevronRight' | 'home' | 'film' | 'tv' | 'list' | 'check' | 'user' | 'close' | 'settings';
+export type IconName = 'star' | 'heart' | 'eye' | 'play' | 'plus' | 'search' | 'bell' | 'chevronLeft' | 'chevronRight' | 'home' | 'film' | 'tv' | 'list' | 'check' | 'user' | 'close' | 'settings' | 'menu';
 
 export interface IconProps { name: IconName; size?: number; title?: string; className?: string }
 export declare function Icon(props: IconProps): React.ReactElement;
@@ -27,7 +27,13 @@ export interface IconButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLBut
 }
 export declare function IconButton(props: IconButtonProps): React.ReactElement;
 
-export interface NavLink { label: string; href?: string; active?: boolean }
+export interface NavLink {
+  label: string;
+  href?: string;
+  active?: boolean;
+  /** Shown beside the label in the phone menu. */
+  icon?: IconName;
+}
 export interface NavBarProps {
   links?: NavLink[];
   brand?: string;
@@ -183,9 +189,13 @@ declare global {
 
 export interface AccountMenuItemProps {
   label: string;
-  icon: IconName;
+  icon?: IconName;
   /** Makes the row a link instead of a button. */
   href?: string;
+  /** Marks the current page (aria-current) with a raised fill. */
+  active?: boolean;
+  /** A count shown in a red pill at the end of the row, such as unread notifications. */
+  badge?: number;
   onClick?: React.MouseEventHandler<HTMLElement>;
   className?: string;
 }
@@ -203,6 +213,7 @@ export interface AccountMenuProps {
   onClose?: () => void;
   /** The menu's accessible name; "Account" by default. */
   label?: string;
+  id?: string;
   className?: string;
 }
 export declare function AccountMenu(props: AccountMenuProps): React.ReactElement;

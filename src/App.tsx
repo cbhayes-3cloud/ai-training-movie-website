@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useState } from 'react';
-import { BottomNav, Footer, NavBar } from 'reelscore';
+import { Footer, NavBar } from 'reelscore';
 import type { ListId, Media } from './api';
 import { AccountDropdown } from './components/AccountDropdown';
 import { SearchPanel } from './components/SearchPanel';
@@ -21,17 +21,9 @@ const isList = (l: string | undefined): l is ListId => LIST_IDS.includes(l as Li
 const isSearchType = (t: string | null): t is SearchType => SEARCH_TYPES.includes(t as SearchType);
 
 const NAV_LINKS = [
-  { label: 'Home', href: '/' },
-  { label: 'Movies', href: '/movies' },
-  { label: 'Series', href: '/series' },
-];
-
-const BOTTOM_NAV = [
   { label: 'Home', icon: 'home', href: '/' },
   { label: 'Movies', icon: 'film', href: '/movies' },
   { label: 'Series', icon: 'tv', href: '/series' },
-  { label: 'Search', icon: 'search', href: '/search' },
-  { label: 'My lists', icon: 'list', href: '#' },
 ] as const;
 
 const FOOTER_LINKS = [
@@ -83,7 +75,7 @@ export default function App() {
         : route === '/series'
           ? 'Series'
           : 'Home';
-  // Person and search pages sit under no section; search has its own BottomNav tab.
+  // Person and search pages sit under no section.
   const active = personId || isSearch ? undefined : section;
 
   return (
@@ -119,8 +111,6 @@ export default function App() {
       </main>
 
       <Footer links={FOOTER_LINKS} homeHref="/" copyright={`© ${new Date().getFullYear()} Reelscore`} />
-
-      <BottomNav items={BOTTOM_NAV.map((i) => ({ ...i, active: i.label === (isSearch ? 'Search' : active) }))} />
     </div>
   );
 }

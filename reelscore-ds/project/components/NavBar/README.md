@@ -2,9 +2,9 @@
 
 The top bar: red wordmark, centred section links with a red underline on the active one, and search, notifications and account on the right.
 
-**Consumer provides:** `links` (`{label, href, active}`), optional `brand`, `homeHref`, `avatarSrc` or `initials`, `avatarLabel`, `notifications` (count), `onSearch` (the field opened), `searchPlaceholder`, `searchValue` or `defaultSearchValue`, `defaultSearchOpen`, `onSearchChange`, `onSearchSubmit` (trimmed query), `onSearchClose`, `searchResults` (rendered in the results panel), `searchResultsLabel`, `onNotifications`, `onAccount`, `sticky`.
+**Consumer provides:** `links` (`{label, href, active, icon}`; `icon` shows in the phone menu), optional `brand`, `homeHref`, `avatarSrc` or `initials`, `avatarLabel`, `notifications` (count), `onSearch` (the field opened), `searchPlaceholder`, `searchValue` or `defaultSearchValue`, `defaultSearchOpen`, `onSearchChange`, `onSearchSubmit` (trimmed query), `onSearchClose`, `searchResults` (rendered in the results panel), `searchResultsLabel`, `onNotifications`, `onAccount`, `sticky`.
 
-- Responds to its own width: under 768px only the wordmark, search and avatar remain (`nav-height-sm`, 56px); pair it with `BottomNav` there so sections stay one tap away.
+- Responds to its own width: under 768px the bar keeps the wordmark, search and avatar (`nav-height-sm`, 56px), and a menu toggle right of the avatar opens an `AccountMenu` under the bar with the links, then Notifications with its count. Picking a row, Escape (focus returns to the toggle) or a tap outside closes it. `BottomNav` still suits phones for one-tap sections.
 - Mark exactly one link `active`; it gets `aria-current="page"`.
 - Keep links to five or fewer, one or two words each.
 - Set `sticky` on long pages; it sits on `z-nav`.
