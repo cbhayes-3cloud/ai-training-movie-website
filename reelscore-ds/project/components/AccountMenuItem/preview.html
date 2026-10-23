@@ -1,0 +1,21 @@
+<!-- @dsCard group="Navigation" height=110 -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>AccountMenuItem — preview</title>
+<style>
+  body { background: var(--surface-100); }
+  .pv { padding: 16px; }
+  .pv-box { width: 248px; background: var(--surface-200); border: 1px solid var(--surface-400); border-radius: var(--radius-md); padding: 7px; }
+</style></head>
+<body>
+<div id="root"></div>
+<script>
+  var R = window.Reelscore, h = React.createElement;
+  function Demo() {
+    return h('div', { className: 'pv' }, h('div', { className: 'pv-box', role: 'menu' },
+      h(R.AccountMenuItem, { icon: 'star', label: 'My ratings' }), h(R.AccountMenuItem, { icon: 'settings', label: 'Settings', href: '#' })));
+  }
+  ReactDOM.createRoot(document.getElementById('root')).render(h(Demo));
+</script>
+</body>
+</html>

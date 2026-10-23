@@ -1,6 +1,6 @@
 import type * as React from 'react';
 
-export type IconName = 'star' | 'heart' | 'eye' | 'play' | 'plus' | 'search' | 'bell' | 'chevronLeft' | 'chevronRight' | 'home' | 'film' | 'tv' | 'list' | 'check' | 'user' | 'close';
+export type IconName = 'star' | 'heart' | 'eye' | 'play' | 'plus' | 'search' | 'bell' | 'chevronLeft' | 'chevronRight' | 'home' | 'film' | 'tv' | 'list' | 'check' | 'user' | 'close' | 'settings';
 
 export interface IconProps { name: IconName; size?: number; title?: string; className?: string }
 export declare function Icon(props: IconProps): React.ReactElement;
@@ -180,3 +180,29 @@ declare global {
     };
   }
 }
+
+export interface AccountMenuItemProps {
+  label: string;
+  icon: IconName;
+  /** Makes the row a link instead of a button. */
+  href?: string;
+  onClick?: React.MouseEventHandler<HTMLElement>;
+  className?: string;
+}
+export declare function AccountMenuItem(props: AccountMenuItemProps): React.ReactElement;
+
+export interface AccountMenuDividerProps { className?: string }
+export declare function AccountMenuDivider(props: AccountMenuDividerProps): React.ReactElement;
+
+export interface AccountMenuProps {
+  /** Rows in groups; a divider is drawn between groups. Defaults to My ratings and My favorites, then Settings and Profile. */
+  groups?: Omit<AccountMenuItemProps, 'className'>[][];
+  /** Called with the row picked, for rows without their own onClick. */
+  onSelect?: (item: Omit<AccountMenuItemProps, 'className'>) => void;
+  /** Called when Escape is pressed inside the menu. */
+  onClose?: () => void;
+  /** The menu's accessible name; "Account" by default. */
+  label?: string;
+  className?: string;
+}
+export declare function AccountMenu(props: AccountMenuProps): React.ReactElement;

@@ -1,4 +1,4 @@
-/* @ds-bundle: {"format":4,"namespace":"Reelscore","components":[{"name":"Icon"},{"name":"Button"},{"name":"IconButton"},{"name":"NavBar"},{"name":"BottomNav"},{"name":"Tabs"},{"name":"GenreChips"},{"name":"AgeBadge"},{"name":"RatingBadge"},{"name":"RatingInput"},{"name":"MovieCard"},{"name":"PosterRow"},{"name":"Hero"},{"name":"Footer"},{"name":"CastStrip"}]} */
+/* @ds-bundle: {"format":4,"namespace":"Reelscore","components":[{"name":"Icon"},{"name":"Button"},{"name":"IconButton"},{"name":"NavBar"},{"name":"BottomNav"},{"name":"Tabs"},{"name":"GenreChips"},{"name":"AgeBadge"},{"name":"RatingBadge"},{"name":"RatingInput"},{"name":"MovieCard"},{"name":"PosterRow"},{"name":"Hero"},{"name":"Footer"},{"name":"CastStrip"},{"name":"AccountMenuItem"},{"name":"AccountMenuDivider"},{"name":"AccountMenu"}]} */
 (function () {
   var React = window.React;
   var h = React.createElement;
@@ -29,17 +29,23 @@
     list: 'M4 6h16v2H4zm0 5h16v2H4zm0 5h10v2H4z',
     check: 'M9.5 16.2L5.3 12l-1.4 1.4 5.6 5.6L20.1 8.4 18.7 7z',
     user: 'M12 3a4.5 4.5 0 110 9 4.5 4.5 0 010-9zm0 11c4.4 0 8 2.2 8 5v2H4v-2c0-2.8 3.6-5 8-5z',
-    close: 'M6.4 5L12 10.6 17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4z'
+    close: 'M6.4 5L12 10.6 17.6 5 19 6.4 13.4 12 19 17.6 17.6 19 12 13.4 6.4 19 5 17.6 10.6 12 5 6.4z',
+    settings: 'M9.67 4.13C9.72 3.55 9.99 3.01 10.42 2.62C10.85 2.23 11.41 2.01 12.00 2.01C12.58 2.01 13.14 2.23 13.57 2.62C14.00 3.01 14.27 3.55 14.32 4.13C14.36 4.51 14.48 4.87 14.68 5.18C14.88 5.50 15.16 5.76 15.49 5.95C15.81 6.14 16.18 6.25 16.55 6.26C16.93 6.28 17.30 6.21 17.64 6.05C18.17 5.81 18.77 5.77 19.33 5.95C19.88 6.13 20.35 6.50 20.64 7.01C20.93 7.51 21.02 8.10 20.90 8.67C20.78 9.24 20.45 9.74 19.97 10.08C19.67 10.30 19.41 10.58 19.24 10.92C19.07 11.25 18.98 11.62 18.98 12.00C18.98 12.37 19.07 12.74 19.24 13.07C19.41 13.41 19.67 13.70 19.97 13.91C20.45 14.25 20.78 14.75 20.90 15.32C21.02 15.89 20.93 16.48 20.64 16.98C20.35 17.49 19.88 17.86 19.33 18.04C18.77 18.22 18.17 18.18 17.64 17.94C17.30 17.79 16.93 17.71 16.55 17.73C16.18 17.74 15.81 17.85 15.49 18.04C15.16 18.23 14.88 18.49 14.68 18.81C14.48 19.12 14.36 19.48 14.32 19.86C14.27 20.44 14.00 20.98 13.57 21.37C13.14 21.76 12.58 21.98 12.00 21.98C11.41 21.98 10.85 21.76 10.42 21.37C9.99 20.98 9.72 20.44 9.67 19.86C9.63 19.48 9.51 19.12 9.31 18.81C9.11 18.49 8.83 18.23 8.50 18.04C8.18 17.85 7.81 17.74 7.44 17.73C7.06 17.71 6.69 17.79 6.35 17.94C5.82 18.18 5.22 18.22 4.66 18.04C4.11 17.86 3.64 17.49 3.35 16.98C3.06 16.48 2.97 15.89 3.09 15.32C3.21 14.75 3.54 14.25 4.02 13.91C4.32 13.70 4.57 13.41 4.75 13.07C4.92 12.74 5.01 12.37 5.01 12.00C5.01 11.62 4.92 11.25 4.75 10.92C4.57 10.58 4.32 10.30 4.02 10.08C3.54 9.74 3.21 9.24 3.09 8.67C2.97 8.10 3.06 7.51 3.35 7.01C3.64 6.51 4.11 6.13 4.66 5.95C5.22 5.77 5.82 5.81 6.34 6.05C6.69 6.21 7.06 6.28 7.43 6.26C7.81 6.25 8.18 6.14 8.50 5.95C8.83 5.76 9.10 5.50 9.31 5.18C9.51 4.87 9.63 4.51 9.66 4.13M14.99 12.00C14.99 13.65 13.65 15.00 11.99 15.00C10.34 15.00 8.99 13.65 8.99 12.00C8.99 10.34 10.34 9.00 11.99 9.00C13.65 9.00 14.99 10.34 14.99 12.00Z'
   };
+  /* Glyphs drawn as a 2px outline rather than a fill (the settings gear). */
+  var STROKED = { settings: true };
 
   function Icon(props) {
     var size = props.size || 20;
     var d = PATHS[props.name] || PATHS.star;
     var a11y = props.title ? { role: 'img', 'aria-label': props.title } : { 'aria-hidden': 'true', focusable: 'false' };
+    var stroked = STROKED[props.name];
     return h('svg', Object.assign({
       className: cx('rs-icon', props.className),
-      width: size, height: size, viewBox: '0 0 24 24', fill: 'currentColor'
-    }, a11y), h('path', { d: d, fillRule: 'evenodd', clipRule: 'evenodd' }));
+      width: size, height: size, viewBox: '0 0 24 24', fill: stroked ? 'none' : 'currentColor'
+    }, a11y), h('path', stroked
+      ? { d: d, stroke: 'currentColor', strokeLinecap: 'round', strokeLinejoin: 'round' }
+      : { d: d, fillRule: 'evenodd', clipRule: 'evenodd' }));
   }
   Icon.names = Object.keys(PATHS);
 
@@ -573,9 +579,57 @@
       h('ul', { className: 'rs-strip__list', 'aria-label': props.label || (props.title ? 'Cast of ' + props.title : 'Cast') }, items));
   }
 
+  var ACCOUNT_ITEMS = [
+    [{ label: 'My ratings', icon: 'star' }, { label: 'My favorites', icon: 'heart' }],
+    [{ label: 'Settings', icon: 'settings' }, { label: 'Profile', icon: 'user' }]
+  ];
+
+  /* One row of the account menu: a 24px icon and a label. A link when it has an href, else a button. */
+  function AccountMenuItem(props) {
+    var inner = [
+      h('span', { key: 'i', className: 'rs-account__icon' }, h(Icon, { name: props.icon })),
+      h('span', { key: 'l', className: 'rs-account__label' }, props.label)
+    ];
+    var cls = cx('rs-account__item', props.className);
+    return props.href
+      ? h('a', { href: props.href, role: 'menuitem', className: cls, onClick: props.onClick }, inner)
+      : h('button', { type: 'button', role: 'menuitem', className: cls, onClick: props.onClick }, inner);
+  }
+
+  /* The hairline between groups of account menu rows. */
+  function AccountMenuDivider(props) {
+    return h('div', { className: cx('rs-account__sep', props.className), role: 'separator' });
+  }
+
+  /* The menu under the NavBar's avatar: icon + label rows, with a divider between groups. Arrow keys move between rows. */
+  function AccountMenu(props) {
+    var groups = props.groups || ACCOUNT_ITEMS;
+    var ref = React.useRef(null);
+    function rows() { return ref.current ? Array.prototype.slice.call(ref.current.querySelectorAll('[role="menuitem"]')) : []; }
+    function onKeyDown(e) {
+      if (e.key === 'Escape') { if (props.onClose) props.onClose(); return; }
+      var list = rows(), i = list.indexOf(document.activeElement), j = -1;
+      if (e.key === 'ArrowDown') j = (i + 1) % list.length;
+      else if (e.key === 'ArrowUp') j = (i - 1 + list.length) % list.length;
+      else if (e.key === 'Home') j = 0;
+      else if (e.key === 'End') j = list.length - 1;
+      if (j < 0) return;
+      e.preventDefault();
+      list[j].focus();
+    }
+    var out = [];
+    groups.forEach(function (group, g) {
+      if (g > 0) out.push(h(AccountMenuDivider, { key: 'sep' + g }));
+      group.forEach(function (it) {
+        out.push(h(AccountMenuItem, { key: it.label, label: it.label, icon: it.icon, href: it.href, onClick: it.onClick || props.onSelect && function () { props.onSelect(it); } }));
+      });
+    });
+    return h('div', { ref: ref, role: 'menu', 'aria-label': props.label || 'Account', className: cx('rs-account', props.className), onKeyDown: onKeyDown }, out);
+  }
+
   window.Reelscore = Object.assign(window.Reelscore || {}, {
     Icon: Icon, Button: Button, IconButton: IconButton, NavBar: NavBar, BottomNav: BottomNav,
     Tabs: Tabs, GenreChips: GenreChips, AgeBadge: AgeBadge, RatingBadge: RatingBadge,
-    RatingInput: RatingInput, MovieCard: MovieCard, PosterRow: PosterRow, Hero: Hero, Footer: Footer, CastStrip: CastStrip
+    RatingInput: RatingInput, MovieCard: MovieCard, PosterRow: PosterRow, Hero: Hero, Footer: Footer, CastStrip: CastStrip, AccountMenuItem: AccountMenuItem, AccountMenuDivider: AccountMenuDivider, AccountMenu: AccountMenu
   });
 })();
