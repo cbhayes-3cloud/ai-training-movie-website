@@ -1,6 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { BottomNav, Footer, NavBar } from 'reelscore';
 import type { ListId, Media } from './api';
+import { AccountDropdown } from './components/AccountDropdown';
 import { SearchPanel } from './components/SearchPanel';
 import { useLibrary } from './hooks/useLibrary';
 import { useSearch } from './hooks/useSearch';
@@ -56,6 +57,10 @@ export default function App() {
     if (isSearch) setSearchText(searchQuery);
   }, [isSearch, searchQuery]);
   const search = useSearch(searchText);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const closeAccount = useCallback(() => setAccountOpen(false), []);
+  // Following a link anywhere closes the menu.
+  useEffect(closeAccount, [path, query.toString(), closeAccount]);
   // On the results page, the dropdown would only repeat what's below it.
   const showPanel = search.active && !(isSearch && searchText.trim() === searchQuery);
 
@@ -94,7 +99,9 @@ export default function App() {
         defaultSearchOpen={isSearch}
         onSearchSubmit={(q) => navigate(searchHref(q))}
         searchResults={showPanel ? <SearchPanel state={search} /> : null}
+        onAccount={() => setAccountOpen((o) => !o)}
       />
+      <AccountDropdown open={accountOpen} onClose={closeAccount} />
 
       <main>
         {isSearch ? (
