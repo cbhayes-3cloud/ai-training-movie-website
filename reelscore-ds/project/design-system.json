@@ -11,9 +11,9 @@
   },
   "groups": [],
   "lastChange": {
-    "at": "2026-10-23T18:00:00Z",
+    "at": "2026-10-23T18:30:00Z",
     "by": "Chris",
-    "note": "AccountMenu, AccountMenuItem and AccountMenuDivider added; NavBar phone menu (links and notifications behind a toggle right of the avatar); menu and settings icons; Tabs and GenreChips keep the gutter when snapping; GenreChips scroll arrows for mouse users. Synced from the reelscore-ds repo.",
+    "note": "AccountMenuItem icons and AccountMenuDivider keep their 24px and 1px sizes outside an AccountMenu (the divider had collapsed to 0px). Synced from the reelscore-ds repo.",
     "via": "Claude Code (reelscore-ds re-sync)"
   },
   "layout": "files",
