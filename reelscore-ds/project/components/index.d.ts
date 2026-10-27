@@ -1,6 +1,6 @@
 import type * as React from 'react';
 
-export type IconName = 'star' | 'heart' | 'eye' | 'play' | 'plus' | 'search' | 'bell' | 'chevronLeft' | 'chevronRight' | 'home' | 'film' | 'tv' | 'list' | 'check' | 'user';
+export type IconName = 'star' | 'heart' | 'eye' | 'play' | 'plus' | 'search' | 'bell' | 'chevronLeft' | 'chevronRight' | 'home' | 'film' | 'tv' | 'list' | 'check' | 'user' | 'close' | 'settings' | 'menu';
 
 export interface IconProps { name: IconName; size?: number; title?: string; className?: string }
 export declare function Icon(props: IconProps): React.ReactElement;
@@ -27,7 +27,13 @@ export interface IconButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLBut
 }
 export declare function IconButton(props: IconButtonProps): React.ReactElement;
 
-export interface NavLink { label: string; href?: string; active?: boolean }
+export interface NavLink {
+  label: string;
+  href?: string;
+  active?: boolean;
+  /** Shown beside the label in the phone menu. */
+  icon?: IconName;
+}
 export interface NavBarProps {
   links?: NavLink[];
   brand?: string;
@@ -37,7 +43,22 @@ export interface NavBarProps {
   avatarLabel?: string;
   notifications?: number;
   sticky?: boolean;
+  /** Called when the search field opens. */
   onSearch?: () => void;
+  searchPlaceholder?: string;
+  /** Controlled search text; leave out and use defaultSearchValue to let the field keep its own. */
+  searchValue?: string;
+  defaultSearchValue?: string;
+  /** Start with the field open (for previews and a search results page). */
+  defaultSearchOpen?: boolean;
+  onSearchChange?: (value: string) => void;
+  /** Enter, or the search icon while the field has text. Gets the trimmed query. */
+  onSearchSubmit?: (query: string) => void;
+  onSearchClose?: () => void;
+  /** Rendered in a panel joined under the open field, as wide as it. Leave out (or null) for no panel. Following a link in it closes the search. */
+  searchResults?: React.ReactNode;
+  /** The panel's accessible name; "Search results" by default. */
+  searchResultsLabel?: string;
   onNotifications?: () => void;
   onAccount?: () => void;
   className?: string;
@@ -165,3 +186,34 @@ declare global {
     };
   }
 }
+
+export interface AccountMenuItemProps {
+  label: string;
+  icon?: IconName;
+  /** Makes the row a link instead of a button. */
+  href?: string;
+  /** Marks the current page (aria-current) with a raised fill. */
+  active?: boolean;
+  /** A count shown in a red pill at the end of the row, such as unread notifications. */
+  badge?: number;
+  onClick?: React.MouseEventHandler<HTMLElement>;
+  className?: string;
+}
+export declare function AccountMenuItem(props: AccountMenuItemProps): React.ReactElement;
+
+export interface AccountMenuDividerProps { className?: string }
+export declare function AccountMenuDivider(props: AccountMenuDividerProps): React.ReactElement;
+
+export interface AccountMenuProps {
+  /** Rows in groups; a divider is drawn between groups. Defaults to My ratings and My favorites, then Settings and Profile. */
+  groups?: Omit<AccountMenuItemProps, 'className'>[][];
+  /** Called with the row picked, for rows without their own onClick. */
+  onSelect?: (item: Omit<AccountMenuItemProps, 'className'>) => void;
+  /** Called when Escape is pressed inside the menu. */
+  onClose?: () => void;
+  /** The menu's accessible name; "Account" by default. */
+  label?: string;
+  id?: string;
+  className?: string;
+}
+export declare function AccountMenu(props: AccountMenuProps): React.ReactElement;

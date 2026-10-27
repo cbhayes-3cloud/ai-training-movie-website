@@ -1,6 +1,6 @@
 # Icon
 
-Fifteen filled glyphs on a 24px grid that inherit `currentColor`, used inside every other component.
+Eighteen glyphs on a 24px grid that inherit `currentColor` (all filled except the outlined `settings` gear), used inside every other component.
 
 **Consumer provides:** `name` (one of `Icon.names`), optional `size` (default 20) and `title`.
 

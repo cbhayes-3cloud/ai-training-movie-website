@@ -3,9 +3,10 @@
 /* Reelscore components. Values come from tokens.css; layout adapts to the component's own width (container queries) so it works in any column, phone first. */
 
 body { margin: 0; background: var(--surface-100); color: var(--ink); font-family: var(--font-sans); -webkit-font-smoothing: antialiased; }
-.rs-icon { display: block; flex: none; }
+.rs-icon { --rs-icon-stroke: 2; display: block; flex: none; }
+.rs-icon path[stroke] { stroke-width: var(--rs-icon-stroke); }
 
-:where(.rs-btn, .rs-iconbtn, .rs-chip, .rs-tab, .rs-avatar, .rs-nav__link, .rs-bottomnav__item, .rs-card__poster, .rs-rate__hit, .rs-wordmark, .rs-row__all, .rs-footer__link, .rs-footer__tmdb, .rs-strip__frame):focus-visible {
+:where(.rs-btn, .rs-iconbtn, .rs-chip, .rs-tab, .rs-avatar, .rs-nav__link, .rs-bottomnav__item, .rs-card__poster, .rs-rate__hit, .rs-wordmark, .rs-row__all, .rs-footer__link, .rs-footer__tmdb, .rs-strip__frame, .rs-account__item):focus-visible {
   outline: 2px solid var(--focus); outline-offset: 2px;
 }
 
@@ -52,7 +53,7 @@ body { margin: 0; background: var(--surface-100); color: var(--ink); font-family
 @media (pointer: coarse) { .rs-iconbtn { width: var(--tap-target); height: var(--tap-target); } .rs-iconbtn--sm { width: 32px; height: 32px; } }
 
 /* NavBar ------------------------------------------------------------ */
-.rs-nav { container-type: inline-size; background: var(--surface-0); box-shadow: 0 1px 0 var(--line); }
+.rs-nav { position: relative; container-type: inline-size; background: var(--surface-0); box-shadow: 0 1px 0 var(--line); }
 .rs-nav--sticky { position: sticky; top: 0; z-index: var(--z-nav); }
 .rs-nav__inner { display: flex; align-items: center; gap: var(--space-4); height: var(--nav-height-sm); padding: 0 var(--gutter-sm); }
 .rs-wordmark { font-family: var(--font-display); font-size: 28px; line-height: 1; letter-spacing: .02em; color: var(--brand); text-decoration: none; text-transform: uppercase; padding-top: 3px; border-radius: 2px; }
@@ -64,14 +65,35 @@ body { margin: 0; background: var(--surface-100); color: var(--ink); font-family
 .rs-nav__link.is-active::after { content: ""; position: absolute; left: var(--space-2); right: var(--space-2); bottom: 0; height: 2px; border-radius: 2px 2px 0 0; background: var(--brand); }
 .rs-nav__actions { display: flex; align-items: center; gap: var(--space-1); margin-left: auto; }
 .rs-nav__bell { display: none; }
+/* Phone menu: the toggle sits right of the avatar; the menu drops under the bar on the right gutter. */
+.rs-nav__menu-toggle { display: inline-grid; }
+.rs-nav__menu { position: absolute; top: calc(100% + var(--space-2)); right: var(--gutter-sm); z-index: var(--z-overlay); box-shadow: var(--shadow-poster); }
 .rs-avatar { display: grid; place-items: center; width: 36px; height: 36px; margin-left: var(--space-2); padding: 0; border: 0; border-radius: 50%; overflow: hidden; background: var(--surface-300); color: var(--ink); cursor: pointer; font: 600 13px/1 var(--font-sans); box-shadow: 0 0 0 2px var(--surface-400); }
 .rs-avatar img { width: 100%; height: 100%; object-fit: cover; }
+/* NavBar search: the icon grows leftwards into a pill. Its width is driven by a spring in bundle.js; --rs-search-p is 0 closed, 1 open. */
+.rs-nav__links, .rs-wordmark { transition: opacity .18s ease, visibility .18s; }
+.rs-nav--search-links .rs-nav__links, .rs-nav--search-all .rs-nav__links, .rs-nav--search-all .rs-wordmark { opacity: 0; visibility: hidden; }
+.rs-nav__search { position: relative; flex: none; width: 40px; height: 40px; }
+.rs-search { --rs-search-p: 0; position: absolute; top: 0; right: 0; z-index: 1; display: flex; align-items: center; width: 100%; height: 100%; margin: 0; border-radius: var(--radius-pill); overflow: hidden; background: transparent; box-shadow: inset 0 0 0 1px transparent; transition: background-color .15s ease, box-shadow .15s ease; }
+.rs-search.is-open { background: var(--surface-200); box-shadow: inset 0 0 0 1px var(--surface-400); }
+.rs-search.is-open .rs-search__toggle:hover { background: none; }
+.rs-search__input { flex: 1; min-width: 0; height: 100%; padding: 0; border: 0; outline: 0; background: none; color: var(--ink); font: 400 15px/20px var(--font-sans); opacity: calc(var(--rs-search-p) * 1.5 - .5); appearance: none; }
+.rs-search__input::placeholder { color: var(--ink-muted); }
+.rs-search__input::-webkit-search-cancel-button { appearance: none; }
+.rs-search__close { margin-right: var(--space-2); opacity: calc(var(--rs-search-p) * 2 - 1); }
+/* Results panel: joined under the open field, the same width, sharing its outline. */
+.rs-search.has-panel { border-radius: calc(var(--tap-target) / 2) calc(var(--tap-target) / 2) 0 0; }
+.rs-search__panel { position: absolute; top: 100%; right: 0; z-index: 1; max-height: min(70vh, 520px); overflow-y: auto; overscroll-behavior: contain; padding: var(--space-2) 0; border: 1px solid var(--surface-400); border-top: 0; border-radius: 0 0 calc(var(--radius-md) * 2) calc(var(--radius-md) * 2); background: var(--surface-200); box-shadow: var(--shadow-poster); }
+.rs-nav__search:focus-within .rs-search.is-open { box-shadow: inset 0 0 0 1px var(--outline); }
+.rs-nav__search:focus-within .rs-search__panel { border-color: var(--outline); }
+@media (pointer: coarse) { .rs-nav__search { width: var(--tap-target); height: var(--tap-target); } }
 @container (min-width: 768px) {
   .rs-nav__inner { height: var(--nav-height); padding: 0 var(--gutter-md); gap: var(--space-6); }
   .rs-wordmark { font-size: 34px; }
   .rs-nav__links { display: flex; }
   .rs-nav__actions { margin-left: 0; }
   .rs-nav__bell { display: inline-grid; }
+  .rs-nav__menu-toggle, .rs-nav__menu { display: none; }
 }
 @container (min-width: 1280px) { .rs-nav__inner { padding: 0 var(--gutter-lg); } }
 
@@ -87,21 +109,27 @@ body { margin: 0; background: var(--surface-100); color: var(--ink); font-family
 /* Tabs -------------------------------------------------------------- */
 .rs-tabs { container-type: inline-size; background: var(--surface-100); box-shadow: inset 0 -1px 0 var(--line); }
 .rs-tabs--overlay { background: var(--surface-glass); -webkit-backdrop-filter: blur(12px); backdrop-filter: blur(12px); }
-.rs-tabs__list { display: flex; gap: var(--space-5); overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; padding: 0 var(--gutter-sm); }
+.rs-tabs__list { display: flex; gap: var(--space-5); overflow-x: auto; scroll-snap-type: x proximity; scroll-padding-inline: var(--gutter-sm); scrollbar-width: none; padding: 0 var(--gutter-sm); }
 .rs-tabs__list::-webkit-scrollbar { display: none; }
 .rs-tab { position: relative; flex: none; scroll-snap-align: start; height: 52px; padding: 0 2px; border: 0; background: none; cursor: pointer; color: var(--ink-muted); font: 500 15px/20px var(--font-sans); white-space: nowrap; }
 .rs-tab:hover { color: var(--ink); }
 .rs-tab.is-active { color: var(--ink); }
 .rs-tab.is-active::after { content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 2px; border-radius: 2px 2px 0 0; background: var(--brand); }
 @container (min-width: 768px) {
-  .rs-tabs__list { justify-content: flex-start; gap: var(--space-6); padding: 0 var(--gutter-md); }
+  .rs-tabs__list { justify-content: flex-start; gap: var(--space-6); padding: 0 var(--gutter-md); scroll-padding-inline: var(--gutter-md); }
   .rs-tab { height: 60px; }
 }
-@container (min-width: 1280px) { .rs-tabs__list { padding: 0 var(--gutter-lg); } }
+@container (min-width: 1280px) { .rs-tabs__list { padding: 0 var(--gutter-lg); scroll-padding-inline: var(--gutter-lg); } }
 
 /* GenreChips -------------------------------------------------------- */
-.rs-chips { container-type: inline-size; background: var(--surface-200); }
-.rs-chips__list { display: flex; gap: var(--space-3); overflow-x: auto; scroll-snap-type: x proximity; scrollbar-width: none; padding: var(--space-4) var(--gutter-sm); }
+.rs-chips { position: relative; container-type: inline-size; background: var(--surface-200); }
+/* Scroll arrows for mouse users: each sits on a fade at its end, shown only while chips run past that end. */
+.rs-chips__arrow { position: absolute; top: 0; bottom: 0; z-index: var(--z-row-arrows); display: none; align-items: center; padding: 0 var(--space-2); pointer-events: none; }
+.rs-chips__arrow .rs-iconbtn { pointer-events: auto; }
+.rs-chips__arrow--l { left: 0; padding-right: var(--space-6); background: linear-gradient(to right, var(--surface-200) 55%, transparent); }
+.rs-chips__arrow--r { right: 0; padding-left: var(--space-6); background: linear-gradient(to left, var(--surface-200) 55%, transparent); }
+@media (hover: hover) and (pointer: fine) { .rs-chips__arrow.is-shown { display: flex; } }
+.rs-chips__list { display: flex; gap: var(--space-3); overflow-x: auto; scroll-snap-type: x proximity; scroll-padding-inline: var(--gutter-sm); scrollbar-width: none; padding: var(--space-4) var(--gutter-sm); }
 .rs-chips__list::-webkit-scrollbar { display: none; }
 .rs-chip { flex: none; scroll-snap-align: start; display: inline-flex; align-items: center; gap: 6px; height: var(--chip-height); min-width: 88px; justify-content: center; padding: 0 var(--space-4); border: 0; border-radius: var(--radius-pill); background: var(--surface-300); color: var(--ink); cursor: pointer; font: 500 13px/16px var(--font-sans); transition: background-color .15s ease; }
 .rs-chip:hover { background: var(--surface-400); }
@@ -111,7 +139,7 @@ body { margin: 0; background: var(--surface-100); color: var(--ink); font-family
 /* chips share the page gutters, so the first chip lines up with the first tab and row title */
 @container (min-width: 768px) { .rs-chips__list { padding-inline: var(--gutter-md); scroll-padding-inline: var(--gutter-md); } }
 @container (min-width: 1024px) { .rs-chips__list { flex-wrap: wrap; overflow: visible; } }
-@container (min-width: 1280px) { .rs-chips__list { padding-inline: var(--gutter-lg); } }
+@container (min-width: 1280px) { .rs-chips__list { padding-inline: var(--gutter-lg); scroll-padding-inline: var(--gutter-lg); } }
 
 /* AgeBadge ---------------------------------------------------------- */
 .rs-age { display: inline-flex; align-items: center; height: 18px; padding: 0 6px; border-radius: var(--radius-xs); background: var(--gold-deep); color: var(--on-gold); font: 700 11px/14px var(--font-sans); letter-spacing: .02em; }
@@ -260,7 +288,19 @@ a.rs-strip__frame:hover { box-shadow: inset 0 0 0 2px rgba(255, 255, 255, .28); 
 .rs-strip__role { font: 400 12px/16px var(--font-sans); color: var(--ink-muted); }
 
 @media (prefers-reduced-motion: reduce) {
-  .rs-btn, .rs-card__poster, .rs-rate__fill, .rs-chip, .rs-iconbtn { transition: none; }
+  .rs-btn, .rs-card__poster, .rs-rate__fill, .rs-chip, .rs-iconbtn, .rs-search, .rs-nav__links, .rs-wordmark { transition: none; }
   .rs-card__poster:hover { transform: none; }
   .rs-strip__film::after { animation: none; background: none; }
 }
+
+/* AccountMenu ------------------------------------------------------- */
+.rs-account { --rs-account-width: 248px; --rs-account-icon: 24px; --rs-account-line: 1px; display: flex; flex-direction: column; gap: var(--space-1); box-sizing: border-box; width: var(--rs-account-width); max-width: 100%; padding: calc(var(--space-2) - var(--rs-account-line)); border: var(--rs-account-line) solid var(--surface-400); border-radius: var(--radius-md); background: var(--surface-200); }
+.rs-account__item { display: flex; align-items: center; gap: var(--space-3); box-sizing: border-box; width: 100%; height: var(--tap-target); padding: 0 var(--space-3); border: 0; border-radius: var(--radius-md); background: none; color: var(--ink); text-align: left; text-decoration: none; cursor: pointer; font: 400 15px/22px var(--font-sans); }
+.rs-account__item.is-active { background: var(--surface-300); }
+.rs-account__item:hover { background: var(--brand); color: var(--on-brand); }
+.rs-account__badge { flex: none; min-width: 20px; height: 20px; padding: 0 6px; box-sizing: border-box; border-radius: var(--radius-pill); background: var(--brand); color: var(--on-brand); text-align: center; font: 700 12px/20px var(--font-sans); }
+.rs-account__item:hover .rs-account__badge { background: var(--on-brand); color: var(--brand); }
+.rs-account__icon { display: grid; flex: none; place-items: center; width: var(--rs-account-icon, 24px); height: var(--rs-account-icon, 24px); }
+.rs-account__icon .rs-icon { width: 100%; height: 100%; }
+.rs-account__label { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.rs-account__sep { height: var(--rs-account-line, 1px); margin: var(--space-1) var(--space-3); background: var(--surface-400); }

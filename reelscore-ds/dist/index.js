@@ -16,3 +16,6 @@ export const PosterRow = R.PosterRow;
 export const Hero = R.Hero;
 export const Footer = R.Footer;
 export const CastStrip = R.CastStrip;
+export const AccountMenuItem = R.AccountMenuItem;
+export const AccountMenuDivider = R.AccountMenuDivider;
+export const AccountMenu = R.AccountMenu;

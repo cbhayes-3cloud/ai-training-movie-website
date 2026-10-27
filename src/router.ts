@@ -10,6 +10,17 @@ import { useEffect, useState } from 'react';
 /** The title page for a `Title.id`. */
 export const titleHref = (id: string) => `/title/${encodeURIComponent(id)}`;
 
+/** The person page for a `Person.id` ("person-287" → "/person/287"). */
+export const personHref = (id: string) => `/person/${encodeURIComponent(id.replace(/^person-/, ''))}`;
+
+/** The tabs of the search results page. */
+export const SEARCH_TYPES = ['all', 'films', 'series', 'people'] as const;
+export type SearchType = (typeof SEARCH_TYPES)[number];
+
+/** The search results page, such as `/search?q=dune` or `/search?q=dune&type=series`. */
+export const searchHref = (q: string, type: SearchType = 'all') =>
+  `/search?q=${encodeURIComponent(q)}${type === 'all' ? '' : `&type=${type}`}`;
+
 /** A full list page, such as `/lists/top-rated?media=series`. */
 export const listHref = (list: string, media: string) => `/lists/${list}?media=${encodeURIComponent(media)}`;
 

@@ -11,10 +11,10 @@
   },
   "groups": [],
   "lastChange": {
-    "at": "2026-10-12T16:48:43Z",
+    "at": "2026-10-23T18:30:00Z",
     "by": "Chris",
-    "note": "Initial system from the reference screenshot: tokens, 13 components, brand book, cover.",
-    "via": "Claude (Cowork)"
+    "note": "AccountMenuItem icons and AccountMenuDivider keep their 24px and 1px sizes outside an AccountMenu (the divider had collapsed to 0px). Synced from the reelscore-ds repo.",
+    "via": "Claude Code (reelscore-ds re-sync)"
   },
   "layout": "files",
   "libraries": [

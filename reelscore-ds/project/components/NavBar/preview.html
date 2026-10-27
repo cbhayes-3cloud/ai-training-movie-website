@@ -1,4 +1,4 @@
-<!-- @dsCard group="Navigation" height=230 width=1200 -->
+<!-- @dsCard group="Navigation" height=330 width=1200 -->
 <!doctype html>
 <html lang="en">
 <head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>NavBar — preview</title>
@@ -21,7 +21,9 @@
     h('div', { className: 'pv' },
       h('p', { className: 'pv-label' }, 'From 768px'),
       h('div', { className: 'pv-wide' }, h(R.NavBar, { links: links, notifications: 2, initials: 'CH' })),
-      h('p', { className: 'pv-label' }, 'Phone (375px): links move to BottomNav'),
+      h('p', { className: 'pv-label' }, 'Search open: the icon grows into the field, over the links when space is short'),
+      h('div', { className: 'pv-wide' }, h(R.NavBar, { links: links, notifications: 2, initials: 'CH', defaultSearchOpen: true, defaultSearchValue: 'Dune' })),
+      h('p', { className: 'pv-label' }, 'Phone (375px): links and notifications move to the menu toggle right of the avatar'),
       h('div', { className: 'pv-phone' }, h(R.NavBar, { links: links, initials: 'CH' }))));
 </script>
 </body>
